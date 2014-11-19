@@ -1,0 +1,141 @@
+#!/bin/ksh
+
+set -e
+
+readonly PROGNAME="`basename $0`"
+readonly VERSION='v1.0'
+
+usage() {
+	echo "usage: $PROGNAME [-d] [-s size] file[.b]"
+}
+
+dflag=0
+sflag=1000
+file=''
+
+while getopts ":ds:" opt;do
+	case $opt in
+		d) dflag=1;;
+		s) sflag=$OPTARG;;
+		:) echo "$PROGNAME: option requires an argument -- $OPTARG";
+		   usage; exit 1;;	# NOTREACHED
+		?) echo "$PROGNAME: unkown option -- $OPTARG";
+		   usage; exit 1;;	# NOTREACHED
+		*) usage; exit 1;;	# NOTREACHED
+	esac
+done
+shift $(( $OPTIND -1 ))
+
+if [ -z "$1" ]; then
+	echo "$PROGNAME: file expected"
+	usage
+	exit 1
+else
+	file="$1"
+	shift
+fi
+
+if [ $# -ge 1 ]; then
+	echo "$PROGNAME: invalid trailing chars -- $@"
+	usage
+	exit 1
+fi
+
+if [ $sflag -le 0 ]; then
+	echo "tape size is invalid"
+	exit 1
+fi
+
+set -u
+
+skip=0
+ptr=0
+tape[0]=0
+lp=0
+filesize=`cat $file | wc -c`
+
+move() {
+	local index=$(( $ptr + $1 ))
+
+	if [ $index -lt 0 ]; then
+		echo "Error: Can't move pointer bellow zero"
+		exit 1
+	fi
+
+	if [ $index -gt $sflag ]; then
+		echo "Error: Reached max tape size"
+		exit 1
+	fi
+	
+	if [ $index -ge ${#tape[@]} ]; then
+		tape[$index]=0
+	fi
+	ptr=$index
+}
+
+cell() {
+	local value="$1"
+
+	tape[$ptr]=$(( ${tape[$ptr]} + $value))
+}
+
+output() {
+	awk -v v=${tape[$ptr]} 'BEGIN { printf "%c", v; exit }'
+}
+
+input() {
+	stty raw
+	local char="`dd bs=1 count=1 2> /dev/null`"
+	stty -raw
+	tape[$ptr]=`printf "%d" "'$char"`
+}
+
+matchingbrace() {
+	local brace="$1"
+	local lc=0
+	local lskip=$skip
+	local char=0
+
+	if [ "$brace" = "[" ]; then
+		openmod='+'
+		closemod='-'
+	else
+		openmod='-'
+		closemod='+'
+	fi
+
+	while char="`dd if=$file bs=1 count=1 skip=$lskip 2> /dev/null`"; do
+		lskip=$(( $lskip $openmod 1 ))
+		case $char in
+			'[') lc=$(( $lc $openmod 1 ));;
+			']') lc=$(( $lc $closemod 1 ));;
+			*) continue;;
+		esac
+
+		if [ $lc -eq 0 ]; then
+			break
+		fi
+	done
+	echo $lskip
+}
+
+while REPLY="`dd if=$file bs=1 count=1 skip=$skip 2> /dev/null`"; do
+	[ $skip -ge $filesize ] && break
+
+	case $REPLY in
+		'<') move -1;;
+		'>') move +1;;
+		'-') cell -1;;
+		'+') cell +1;;
+		'.') output;;
+		',') input;;
+		'[') [ ${tape[$ptr]} -eq 0 ] && skip=$((`matchingbrace '['` + 1));;
+		']') [ ${tape[$ptr]} -ne 0 ] && skip=`matchingbrace ']'`;;
+		*) : ;;
+	esac
+
+	[ $dflag -eq 1 ] && echo "command $REPLY: ${tape[$ptr]} ($ptr)" >&2
+
+	skip=$(( $skip + 1 ))
+done
+
