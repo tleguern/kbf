@@ -149,7 +149,7 @@ while REPLY="`dd if=$file bs=1 count=1 skip=$skip 2> /dev/null`"; do
 done
 
 if [ $sflag -eq 1 ]; then
-	echo Number of cells used: $(( ${#tape[*]} + 1 ))
+	echo Number of cells used: ${#tape[*]}/$tflag
 	echo Number of instructions: $ins
 	echo Number of characters: $skip
 fi
