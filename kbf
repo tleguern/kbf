@@ -6,16 +6,18 @@ readonly PROGNAME="`basename $0`"
 readonly VERSION='v1.0'
 
 usage() {
-	echo "usage: $PROGNAME [-d] [-t size] file[.b]"
+	echo "usage: $PROGNAME [-ds] [-t size] file[.b]"
 }
 
 dflag=0
+sflag=0
 tflag=1000
 file=''
 
-while getopts ":dt:" opt;do
+while getopts ":dst:" opt;do
 	case $opt in
 		d) dflag=1;;
+		s) sflag=1;;
 		t) tflag=$OPTARG;;
 		:) echo "$PROGNAME: option requires an argument -- $OPTARG";
 		   usage; exit 1;;	# NOTREACHED
@@ -119,23 +121,36 @@ matchingbrace() {
 	echo $lskip
 }
 
+ins=0
 while REPLY="`dd if=$file bs=1 count=1 skip=$skip 2> /dev/null`"; do
 	[ $skip -ge $filesize ] && break
 
 	case $REPLY in
-		'<') move -1;;
-		'>') move +1;;
-		'-') cell -1;;
-		'+') cell +1;;
-		'.') output;;
-		',') input;;
-		'[') [ ${tape[$ptr]} -eq 0 ] && skip=$((`matchingbrace '['` + 1));;
-		']') [ ${tape[$ptr]} -ne 0 ] && skip=`matchingbrace ']'`;;
-		*) : ;;
+		'<') move -1 ; ins=$(( $ins + 1));;
+		'>') move +1 ; ins=$(( $ins + 1));;
+		'-') cell -1 ; ins=$(( $ins + 1));;
+		'+') cell +1 ; ins=$(( $ins + 1));;
+		'.') output ; ins=$(( $ins + 1));;
+		',') input ; ins=$(( $ins + 1));;
+		'[') if [ ${tape[$ptr]} -eq 0 ]; then
+			skip=$((`matchingbrace '['` + 1))
+			ins=$(( $ins + 1))
+		     fi;;
+		']') if [ ${tape[$ptr]} -ne 0 ]; then
+			skip=`matchingbrace ']'`
+			ins=$(( $ins + 1))
+		     fi;;
+		*) :;;
 	esac
 
 	[ $dflag -eq 1 ] && echo "command $REPLY: ${tape[$ptr]} ($ptr)" >&2
 
 	skip=$(( $skip + 1 ))
 done
+
+if [ $sflag -eq 1 ]; then
+	echo Number of cells used: $(( ${#tape[*]} + 1 ))
+	echo Number of instructions: $ins
+	echo Number of characters: $skip
+fi
 
