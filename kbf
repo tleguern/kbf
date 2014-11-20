@@ -6,17 +6,17 @@ readonly PROGNAME="`basename $0`"
 readonly VERSION='v1.0'
 
 usage() {
-	echo "usage: $PROGNAME [-d] [-s size] file[.b]"
+	echo "usage: $PROGNAME [-d] [-t size] file[.b]"
 }
 
 dflag=0
-sflag=1000
+tflag=1000
 file=''
 
-while getopts ":ds:" opt;do
+while getopts ":dt:" opt;do
 	case $opt in
 		d) dflag=1;;
-		s) sflag=$OPTARG;;
+		t) tflag=$OPTARG;;
 		:) echo "$PROGNAME: option requires an argument -- $OPTARG";
 		   usage; exit 1;;	# NOTREACHED
 		?) echo "$PROGNAME: unkown option -- $OPTARG";
@@ -41,7 +41,7 @@ if [ $# -ge 1 ]; then
 	exit 1
 fi
 
-if [ $sflag -le 0 ]; then
+if [ $tflag -le 0 ]; then
 	echo "tape size is invalid"
 	exit 1
 fi
@@ -62,7 +62,7 @@ move() {
 		exit 1
 	fi
 
-	if [ $index -gt $sflag ]; then
+	if [ $index -gt $tflag ]; then
 		echo "Error: Reached max tape size"
 		exit 1
 	fi
