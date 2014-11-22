@@ -149,8 +149,7 @@ while i="`dd if=$file bs=1 count=1 skip=$iptr 2> /dev/null`"; do
 		     fi;;
 		*) cc=$(( $cc + 1 ));;
 	esac
-
-	[ $dflag -eq 1 ] && echo "command $i: ${tape[$tptr]} ($tptr)" >&2
+	[ $dflag -eq 1 ] && echo " $i: [$tptr]=${tape[$tptr]}" >&2
 
 	ic=$(( $ic + 1 ))
 	iptr=$(( $iptr + 1 ))
