@@ -57,6 +57,8 @@ filesize=`cat $file | wc -c`
 ic=0
 iptr=0
 
+cc=0
+
 move() {
 	local index=$(( $tptr + $1 ))
 
@@ -124,7 +126,7 @@ matchingbrace() {
 
 stats() {
 		echo Number of cells used: ${#tape[*]}/$tflag
-		echo Number of instructions: $ic
+		echo Number of instructions: $(( $ic - $cc ))
 }
 
 trap stats USR1
@@ -133,25 +135,24 @@ while i="`dd if=$file bs=1 count=1 skip=$iptr 2> /dev/null`"; do
 	[ $iptr -ge $filesize ] && break
 
 	case $i in
-		'<') move -1 ; ic=$(( $ic + 1));;
-		'>') move +1 ; ic=$(( $ic + 1));;
-		'-') cell -1 ; ic=$(( $ic + 1));;
-		'+') cell +1 ; ic=$(( $ic + 1));;
-		'.') output ; ic=$(( $ic + 1));;
-		',') input ; ic=$(( $ic + 1));;
+		'<') move -1;;
+		'>') move +1;;
+		'-') cell -1;;
+		'+') cell +1;;
+		'.') output;;
+		',') input;;
 		'[') if [ ${tape[$tptr]} -eq 0 ]; then
 			iptr=$((`matchingbrace '['` + 1))
-			ic=$(( $ic + 1))
 		     fi;;
 		']') if [ ${tape[$tptr]} -ne 0 ]; then
 			iptr=`matchingbrace ']'`
-			ic=$(( $ic + 1))
 		     fi;;
-		*) :;;
+		*) cc=$(( $cc + 1 ));;
 	esac
 
 	[ $dflag -eq 1 ] && echo "command $i: ${tape[$tptr]} ($tptr)" >&2
 
+	ic=$(( $ic + 1 ))
 	iptr=$(( $iptr + 1 ))
 done
 
