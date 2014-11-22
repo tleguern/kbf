@@ -50,15 +50,15 @@ fi
 
 set -u
 
-skip=0
-ptr=0
 tape[0]=0
-lp=0
+tptr=0
 filesize=`cat $file | wc -c`
+
 ic=0
+iptr=0
 
 move() {
-	local index=$(( $ptr + $1 ))
+	local index=$(( $tptr + $1 ))
 
 	if [ $index -lt 0 ]; then
 		echo "Error: Can't move pointer bellow zero"
@@ -73,30 +73,30 @@ move() {
 	if [ $index -ge ${#tape[@]} ]; then
 		tape[$index]=0
 	fi
-	ptr=$index
+	tptr=$index
 }
 
 cell() {
 	local value="$1"
 
-	tape[$ptr]=$(( ${tape[$ptr]} + $value))
+	tape[$tptr]=$(( ${tape[$tptr]} + $value))
 }
 
 output() {
-	awk -v v=${tape[$ptr]} 'BEGIN { printf "%c", v; exit }'
+	awk -v v=${tape[$tptr]} 'BEGIN { printf "%c", v; exit }'
 }
 
 input() {
 	stty raw
 	local char="`dd bs=1 count=1 2> /dev/null`"
 	stty -raw
-	tape[$ptr]=`printf "%d" "'$char"`
+	tape[$tptr]=`printf "%d" "'$char"`
 }
 
 matchingbrace() {
 	local brace="$1"
 	local lc=0
-	local lskip=$skip
+	local liptr=$iptr
 	local char=0
 
 	if [ "$brace" = "[" ]; then
@@ -107,8 +107,8 @@ matchingbrace() {
 		closemod='+'
 	fi
 
-	while char="`dd if=$file bs=1 count=1 skip=$lskip 2> /dev/null`"; do
-		lskip=$(( $lskip $openmod 1 ))
+	while char="`dd if=$file bs=1 count=1 skip=$liptr 2> /dev/null`"; do
+		liptr=$(( $liptr $openmod 1 ))
 		case $char in
 			'[') lc=$(( $lc $openmod 1 ));;
 			']') lc=$(( $lc $closemod 1 ));;
@@ -119,7 +119,7 @@ matchingbrace() {
 			break
 		fi
 	done
-	echo $lskip
+	echo $liptr
 }
 
 stats() {
@@ -129,30 +129,30 @@ stats() {
 
 trap stats USR1
 
-while REPLY="`dd if=$file bs=1 count=1 skip=$skip 2> /dev/null`"; do
-	[ $skip -ge $filesize ] && break
+while i="`dd if=$file bs=1 count=1 skip=$iptr 2> /dev/null`"; do
+	[ $iptr -ge $filesize ] && break
 
-	case $REPLY in
+	case $i in
 		'<') move -1 ; ic=$(( $ic + 1));;
 		'>') move +1 ; ic=$(( $ic + 1));;
 		'-') cell -1 ; ic=$(( $ic + 1));;
 		'+') cell +1 ; ic=$(( $ic + 1));;
 		'.') output ; ic=$(( $ic + 1));;
 		',') input ; ic=$(( $ic + 1));;
-		'[') if [ ${tape[$ptr]} -eq 0 ]; then
-			skip=$((`matchingbrace '['` + 1))
+		'[') if [ ${tape[$tptr]} -eq 0 ]; then
+			iptr=$((`matchingbrace '['` + 1))
 			ic=$(( $ic + 1))
 		     fi;;
-		']') if [ ${tape[$ptr]} -ne 0 ]; then
-			skip=`matchingbrace ']'`
+		']') if [ ${tape[$tptr]} -ne 0 ]; then
+			iptr=`matchingbrace ']'`
 			ic=$(( $ic + 1))
 		     fi;;
 		*) :;;
 	esac
 
-	[ $dflag -eq 1 ] && echo "command $REPLY: ${tape[$ptr]} ($ptr)" >&2
+	[ $dflag -eq 1 ] && echo "command $i: ${tape[$tptr]} ($tptr)" >&2
 
-	skip=$(( $skip + 1 ))
+	iptr=$(( $iptr + 1 ))
 done
 
 if [ $sflag -eq 1 ]; then
