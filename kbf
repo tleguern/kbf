@@ -56,6 +56,7 @@ filesize=`cat $file | wc -c`
 
 ic=0
 iptr=0
+set -A i -- `cat $file | sed 's/./& /g'`
 
 cc=0
 
@@ -71,7 +72,7 @@ move() {
 		echo "Error: Reached max tape size"
 		exit 1
 	fi
-	
+
 	if [ $index -ge ${#tape[@]} ]; then
 		tape[$index]=0
 	fi
@@ -99,28 +100,32 @@ matchingbrace() {
 	local brace="$1"
 	local lc=0
 	local liptr=$iptr
-	local char=0
+	local size=${#i[*]}
 
-	if [ "$brace" = "[" ]; then
-		openmod='+'
-		closemod='-'
-	else
-		openmod='-'
-		closemod='+'
+	if [ "$brace" = "]" ]; then
+		set -A i -- `echo ${i[*]} | rev`
+		liptr=$(( $size - $liptr - 1 ))
 	fi
-
-	while char="`dd if=$file bs=1 count=1 skip=$liptr 2> /dev/null`"; do
-		liptr=$(( $liptr $openmod 1 ))
-		case $char in
-			'[') lc=$(( $lc $openmod 1 ));;
-			']') lc=$(( $lc $closemod 1 ));;
-			*) continue;;
+	while [ $liptr -lt $size ]; do
+		case ${i[$liptr]} in
+			'[') lc=$(( $lc + 1 ));;
+			']') lc=$(( $lc - 1 ));;
+			*) :;;
 		esac
-
 		if [ $lc -eq 0 ]; then
 			break
 		fi
+		liptr=$(( $liptr + 1 ))
 	done
+	if [ "$brace" = "]" ]; then
+		set -A i -- `echo ${i[*]} | rev`
+		liptr=$(( $size - $liptr - 1 ))
+	fi
+
+	if [ $lc -ne 0 ]; then
+		echo "Mismatched brace at $iptr"
+		return -1
+	fi
 	echo $liptr
 }
 
@@ -133,10 +138,9 @@ stats() {
 trap stats USR1
 echo PID: $$ >&2
 
-while i="`dd if=$file bs=1 count=1 skip=$iptr 2> /dev/null`"; do
-	[ $iptr -ge $filesize ] && break
+while [ $iptr -lt ${#i[*]} ]; do
 	local jump=0
-	case $i in
+	case ${i[$iptr]} in
 		'<') move -1;;
 		'>') move +1;;
 		'-') cell -1;;
@@ -151,10 +155,14 @@ while i="`dd if=$file bs=1 count=1 skip=$iptr 2> /dev/null`"; do
 		     fi;;
 		*) cc=$(( $cc + 1 ));;
 	esac
-	[ $dflag -eq 1 ] && echo " $i: [$tptr]=${tape[$tptr]}" >&2
+	[ $dflag -eq 1 ] && echo " ${i[$iptr]}: [$tptr]=${tape[$tptr]}" >&2
 
 	ic=$(( $ic + 1 ))
-	iptr=$(( $iptr + 1 ))
+	if [ $jump -gt 0 ]; then
+		iptr=$jump
+	else
+		iptr=$(( $iptr + 1 ))
+	fi
 done
 
 if [ $sflag -eq 1 ]; then
