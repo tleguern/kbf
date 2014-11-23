@@ -131,10 +131,11 @@ stats() {
 }
 
 trap stats USR1
+echo PID: $$ >&2
 
 while i="`dd if=$file bs=1 count=1 skip=$iptr 2> /dev/null`"; do
 	[ $iptr -ge $filesize ] && break
-
+	local jump=0
 	case $i in
 		'<') move -1;;
 		'>') move +1;;
@@ -143,10 +144,10 @@ while i="`dd if=$file bs=1 count=1 skip=$iptr 2> /dev/null`"; do
 		'.') output;;
 		',') input;;
 		'[') if [ ${tape[$tptr]} -eq 0 ]; then
-			iptr=$((`matchingbrace '['` + 1))
+			jump=$((`matchingbrace '['` + 1))
 		     fi;;
 		']') if [ ${tape[$tptr]} -ne 0 ]; then
-			iptr=`matchingbrace ']'`
+			jump=`matchingbrace ']'`
 		     fi;;
 		*) cc=$(( $cc + 1 ));;
 	esac
