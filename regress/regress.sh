@@ -32,8 +32,11 @@ failed() {
 	FAILED=`expr $FAILED + 1`
 }
 
-t 0 'selfsize.res' 'selfsize.b'
 t 0 'headcom.res' 'headcom.b'
+t 0 '15.res' '15.b'
+t 0 '40.res' '40.b'
+t 0 'selfsize.res' 'selfsize.b'
+t 0 'doubleloop.res' 'doubleloop.b'
 t 0 'hello.res' 'hello.b'
 
 echo ""
