@@ -15,15 +15,15 @@ t() {
 	tmp=`mktemp -t kbf.XXXXXXXX`
 	if ! $kbf -s $3 > $tmp 2> /dev/null; then
 		failed
-		#rm $tmp
+		rm $tmp
 		return
 	fi
 	if ! diff -u $2 $tmp > /dev/null 2> /dev/null; then
 		failed
-		#rm $tmp
+		rm $tmp
 		return
 	fi
-	#rm $tmp
+	rm $tmp
 	echo OK
 }
 
