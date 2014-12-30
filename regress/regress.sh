@@ -4,7 +4,7 @@
 
 FAILED=0
 
-kbf=${kbf:-../kbf}
+kbf=${kbf:-../kbf.sh}
 
 t() {
 	# $1 -> exit code
