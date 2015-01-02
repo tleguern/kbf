@@ -6,7 +6,7 @@ readonly PROGNAME="`basename $0`"
 readonly VERSION='v1.0'
 
 usage() {
-	echo "usage: $PROGNAME [-ds] [-t size] file[.b]"
+	echo "usage: $PROGNAME [-ds] [-t size] file[.b]" >&2
 }
 
 dflag=0
@@ -19,9 +19,9 @@ while getopts ":dst:" opt;do
 		d) dflag=1;;
 		s) sflag=1;;
 		t) tflag=$OPTARG;;
-		:) echo "$PROGNAME: option requires an argument -- $OPTARG";
+		:) echo "$PROGNAME: option requires an argument -- $OPTARG" >&2;
 		   usage; exit 1;;	# NOTREACHED
-		?) echo "$PROGNAME: unkown option -- $OPTARG";
+		?) echo "$PROGNAME: unkown option -- $OPTARG" >&2;
 		   usage; exit 1;;	# NOTREACHED
 		*) usage; exit 1;;	# NOTREACHED
 	esac
@@ -29,7 +29,7 @@ done
 shift $(( $OPTIND -1 ))
 
 if [ -z "$1" ]; then
-	echo "$PROGNAME: file expected"
+	echo "$PROGNAME: file expected" >&2
 	usage
 	exit 1
 else
@@ -38,7 +38,7 @@ else
 fi
 
 if [ $# -ge 1 ]; then
-	echo "$PROGNAME: invalid trailing chars -- $@"
+	echo "$PROGNAME: invalid trailing chars -- $@" >&2
 	usage
 	exit 1
 fi
@@ -46,20 +46,20 @@ fi
 set -u
 
 if [ $tflag -le 0 ]; then
-	echo "tape size is invalid"
+	echo "$PROGNAME: tape size is invalid" >&2
 	exit 1
 fi
 
 if ! [ -e "$file" ]; then
-	echo "$PROGNAME: no such file $file"
+	echo "$PROGNAME: no such file $file" >&2
 	exit 1
 fi
 if ! [ -f "$file" ]; then
-	echo "$PROGNAME: invalid file $file"
+	echo "$PROGNAME: invalid file $file" >&2
 	exit 1
 fi
 if ! [ -r "$file" ]; then
-	echo "$PROGNAME: can't read $file"
+	echo "$PROGNAME: can't read $file" >&2
 	exit 1
 fi
 
@@ -77,12 +77,12 @@ move() {
 	local index=$(( $tptr + $1 ))
 
 	if [ $index -lt 0 ]; then
-		echo "Error: Can't move pointer bellow zero"
+		echo "Error: Can't move pointer bellow zero" >&2
 		exit 1
 	fi
 
 	if [ $index -gt $tflag ]; then
-		echo "Error: Reached max tape size"
+		echo "Error: Reached max tape size" >&2
 		exit 1
 	fi
 
@@ -136,7 +136,7 @@ matchingbrace() {
 	fi
 
 	if [ $lc -ne 0 ]; then
-		echo "Mismatched brace at $iptr"
+		echo "Error: Mismatched brace at $iptr" >&2
 		exit 1
 	fi
 	echo $liptr
