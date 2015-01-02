@@ -143,7 +143,7 @@ matchingbrace() {
 }
 
 stats() {
-	echo Number of cells used: ${#tape[*]}/$tflag
+	echo Number of cells used: ${#tape[*]}/$(( $tflag + 1 ))
 	echo Number of instructions: $(( $ic - $cc ))
 	echo State of the tape: ${tape[*]}
 }
