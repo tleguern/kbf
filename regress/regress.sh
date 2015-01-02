@@ -49,6 +49,7 @@ t 0 'selfsize.res' 'selfsize.b'
 t 0 'doubleloop.res' 'doubleloop.b'
 t 0 '50cells.res' '50cells.b'
 t 0 'hello.res' 'hello.b'
+t 1 '/dev/null' 'cristofd-close.b'
 
 echo ""
 echo "Failed: $FAILED"
