@@ -13,12 +13,22 @@ t() {
 	echo "Run $kbf \"$3\", expect exit code $1"
 
 	tmp=`mktemp -t kbf.XXXXXXXX`
-	if ! $kbf -s $3 > $tmp 2> /dev/null; then
+	set +e
+	$kbf -s $3 > $tmp 2> /dev/null
+	ret=$?
+	set -e
+	if [ $ret -ne $1 ]; then
+		echo "Wrong exit code for $3 ($ret)"
 		failed
 		rm $tmp
 		return
 	fi
-	if ! diff -u $2 $tmp > /dev/null 2> /dev/null; then
+	set +e
+	diff -u $2 $tmp > /dev/null 2> /dev/null
+	ret=$?
+	set -e
+	if [ $ret -ne $1 ]; then
+		echo "Wrong result for $3 ($ret)"
 		failed
 		rm $tmp
 		return
