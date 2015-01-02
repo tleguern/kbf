@@ -74,7 +74,9 @@ set -A i -- `cat $file | sed 's/./& /g'`
 cc=0
 
 move() {
+	set +u
 	local index=$(( $tptr + $1 ))
+	set -u
 
 	if [ $index -lt 0 ]; then
 		echo "Error: Can't move pointer bellow zero" >&2
@@ -93,7 +95,9 @@ move() {
 }
 
 cell() {
+	set +u
 	local value="$1"
+	set -u
 
 	tape[$tptr]=$(( ${tape[$tptr]} + $value))
 }
@@ -110,7 +114,9 @@ input() {
 }
 
 matchingbrace() {
+	set +u
 	local brace="$1"
+	set -u
 	local lc=0
 	local liptr=$iptr
 	local size=${#i[*]}
