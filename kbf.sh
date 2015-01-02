@@ -149,7 +149,7 @@ stats() {
 }
 
 trap stats USR1
-echo PID: $$ >&2
+[ $dflag -eq 1 ] && echo PID: $$ >&2
 
 while [ $iptr -lt ${#i[*]} ]; do
 	local jump=0
