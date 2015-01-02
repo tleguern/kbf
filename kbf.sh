@@ -137,7 +137,7 @@ matchingbrace() {
 
 	if [ $lc -ne 0 ]; then
 		echo "Mismatched brace at $iptr"
-		return -1
+		exit 1
 	fi
 	echo $liptr
 }
