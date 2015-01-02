@@ -75,31 +75,31 @@ cc=0
 
 move() {
 	set +u
-	local index=$(( $tptr + $1 ))
+	local _index=$(( $tptr + $1 ))
 	set -u
 
-	if [ $index -lt 0 ]; then
+	if [ $_index -lt 0 ]; then
 		echo "Error: Can't move pointer bellow zero" >&2
 		exit 1
 	fi
 
-	if [ $index -gt $tflag ]; then
+	if [ $_index -gt $tflag ]; then
 		echo "Error: Reached max tape size" >&2
 		exit 1
 	fi
 
-	if [ $index -ge ${#tape[@]} ]; then
-		tape[$index]=0
+	if [ $_index -ge ${#tape[@]} ]; then
+		tape[$_index]=0
 	fi
-	tptr=$index
+	tptr=$_index
 }
 
 cell() {
 	set +u
-	local value="$1"
+	local _value="$1"
 	set -u
 
-	tape[$tptr]=$(( ${tape[$tptr]} + $value))
+	tape[$tptr]=$(( ${tape[$tptr]} + $_value))
 }
 
 output() {
@@ -115,13 +115,13 @@ input() {
 
 matchingbrace() {
 	set +u
-	local brace="$1"
+	local _brace="$1"
 	set -u
 	local lc=0
 	local liptr=$iptr
 	local size=${#i[*]}
 
-	if [ "$brace" = "]" ]; then
+	if [ "$_brace" = "]" ]; then
 		set -A i -- `echo ${i[*]} | rev`
 		liptr=$(( $size - $liptr - 1 ))
 	fi
@@ -136,7 +136,7 @@ matchingbrace() {
 		fi
 		liptr=$(( $liptr + 1 ))
 	done
-	if [ "$brace" = "]" ]; then
+	if [ "$_brace" = "]" ]; then
 		set -A i -- `echo ${i[*]} | rev`
 		liptr=$(( $size - $liptr - 1 ))
 	fi
