@@ -11,7 +11,7 @@ usage() {
 
 dflag=0
 sflag=0
-tflag=1000
+tflag=999
 file=''
 
 while getopts ":dst:" opt;do
