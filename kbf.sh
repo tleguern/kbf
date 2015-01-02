@@ -143,9 +143,9 @@ matchingbrace() {
 }
 
 stats() {
-		echo Number of cells used: ${#tape[*]}/$tflag
-		echo Number of instructions: $(( $ic - $cc ))
-		echo State of the tape: ${tape[*]}
+	echo Number of cells used: ${#tape[*]}/$tflag
+	echo Number of instructions: $(( $ic - $cc ))
+	echo State of the tape: ${tape[*]}
 }
 
 trap stats USR1
