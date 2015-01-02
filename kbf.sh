@@ -43,12 +43,25 @@ if [ $# -ge 1 ]; then
 	exit 1
 fi
 
+set -u
+
 if [ $tflag -le 0 ]; then
 	echo "tape size is invalid"
 	exit 1
 fi
 
-set -u
+if ! [ -e "$file" ]; then
+	echo "$PROGNAME: no such file $file"
+	exit 1
+fi
+if ! [ -f "$file" ]; then
+	echo "$PROGNAME: invalid file $file"
+	exit 1
+fi
+if ! [ -r "$file" ]; then
+	echo "$PROGNAME: can't read $file"
+	exit 1
+fi
 
 tape[0]=0
 tptr=0
