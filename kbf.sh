@@ -63,16 +63,6 @@ if ! [ -r "$file" ]; then
 	exit 1
 fi
 
-tape[0]=0
-tptr=0
-filesize=`cat $file | wc -c`
-
-ic=0
-iptr=0
-set -A i -- `cat $file | sed 's/./& /g'`
-
-cc=0
-
 move() {
 	set +u
 	local _index=$(( $tptr + $1 ))
@@ -153,6 +143,14 @@ stats() {
 	echo Number of instructions: $(( $ic - $cc ))
 	echo State of the tape: ${tape[*]}
 }
+
+set -A i -- `cat $file | sed 's/./& /g'`
+tape[0]=0
+tptr=0
+filesize=`cat $file | wc -c`
+ic=0
+iptr=0
+cc=0
 
 trap stats USR1
 [ $dflag -eq 1 ] && echo PID: $$ >&2
