@@ -21,7 +21,7 @@ while getopts ":dst:" opt;do
 		t) tflag=$OPTARG;;
 		:) echo "$PROGNAME: option requires an argument -- $OPTARG" >&2;
 		   usage; exit 1;;	# NOTREACHED
-		?) echo "$PROGNAME: unkown option -- $OPTARG" >&2;
+		\?) echo "$PROGNAME: unkown option -- $OPTARG" >&2;
 		   usage; exit 1;;	# NOTREACHED
 		*) usage; exit 1;;	# NOTREACHED
 	esac
