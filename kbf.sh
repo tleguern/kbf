@@ -49,7 +49,6 @@ if [ $tflag -le 0 ]; then
 	echo "$PROGNAME: tape size is invalid" >&2
 	exit 1
 fi
-
 if ! [ -e "$file" ]; then
 	echo "$PROGNAME: no such file $file" >&2
 	exit 1
@@ -93,12 +92,10 @@ move() {
 		echo "Error: Can't move pointer bellow zero" >&2
 		exit 1
 	fi
-
 	if [ $_index -gt $tflag ]; then
 		echo "Error: Reached max tape size" >&2
 		exit 1
 	fi
-
 	if [ $_index -ge ${#tape[@]} ]; then
 		tape[$_index]=0
 	fi
@@ -151,7 +148,6 @@ matchingbrace() {
 		array i "`echo ${i[*]} | rev`"
 		liptr=$(( $size - $liptr - 1 ))
 	fi
-
 	if [ $lc -ne 0 ]; then
 		echo "Error: Mismatched brace near character $iptr" >&2
 		exit 1
