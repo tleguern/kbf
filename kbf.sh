@@ -147,7 +147,6 @@ stats() {
 set -A i -- `cat $file | sed 's/./& /g'`
 tape[0]=0
 tptr=0
-filesize=`cat $file | wc -c`
 ic=0
 iptr=0
 cc=0
