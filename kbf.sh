@@ -158,7 +158,7 @@ trap stats USR1
 [ $dflag -eq 1 ] && echo PID: $$ >&2
 
 while [ $iptr -lt ${#i[*]} ]; do
-	local jump=0
+	jump=0
 	case ${i[$iptr]} in
 		'<') move -1;;
 		'>') move +1;;
