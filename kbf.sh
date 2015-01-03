@@ -89,7 +89,7 @@ cell() {
 	local _value="$1"
 	set -u
 
-	tape[$tptr]=$(( ${tape[$tptr]} + $_value))
+	tape[$tptr]=$(( ${tape[$tptr]} + $_value ))
 }
 
 output() {
