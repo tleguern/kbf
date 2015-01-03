@@ -63,6 +63,27 @@ if ! [ -r "$file" ]; then
 	exit 1
 fi
 
+array() {
+	set +u
+	local _array_name="$1"; shift
+
+	if [ -n "$BASH_VERSION" ]; then
+		declare -ga $_array_name
+		local _array_i=0
+		local _array_j=0
+		for _array_i in $@; do
+			declare -ga "$_array_name[$_array_j]=$_array_i"
+			_array_j=$(( $_array_j + 1 ))
+		done
+	elif [ -n "$KSH_VERSION" ]; then
+		set -A $_array_name -- $@
+	else
+		echo "Error: unsuported shell :(" >&2
+		exit 1
+	fi
+	set -u
+}
+
 move() {
 	set +u
 	local _index=$(( $tptr + $1 ))
@@ -112,7 +133,7 @@ matchingbrace() {
 	local size=${#i[*]}
 
 	if [ "$_brace" = "]" ]; then
-		set -A i -- `echo ${i[*]} | rev`
+		array i "`echo ${i[*]} | rev`"
 		liptr=$(( $size - $liptr - 1 ))
 	fi
 	while [ $liptr -lt $size ]; do
@@ -127,7 +148,7 @@ matchingbrace() {
 		liptr=$(( $liptr + 1 ))
 	done
 	if [ "$_brace" = "]" ]; then
-		set -A i -- `echo ${i[*]} | rev`
+		array i "`echo ${i[*]} | rev`"
 		liptr=$(( $size - $liptr - 1 ))
 	fi
 
@@ -144,8 +165,8 @@ stats() {
 	echo State of the tape: ${tape[*]}
 }
 
-set -A i -- `cat $file | sed 's/./& /g'`
-tape[0]=0
+array i "`cat $file | sed 's/./& /g'`"
+array tape 0
 tptr=0
 ic=0
 iptr=0
