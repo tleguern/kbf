@@ -1,7 +1,8 @@
-kbf - ksh brainfuck interpreter
-===============================
+kbf - the Korn shell BrainFuck interpreter
+==========================================
 
-kbf is a brainfuck interpreter written in ksh.
+kbf is a brainfuck interpreter written in korn shell. It is currently
+compatible with OpenBSD pdksh and bash.
 
 Some details about this implementation:
 
