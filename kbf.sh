@@ -123,6 +123,25 @@ cell8() {
 	fi
 }
 
+cell16() {
+	set +u
+	local _value="$1"
+	set -u
+	local _nvalue=$(( ${tape[$tptr]} + $_value ))
+
+	if [ $_value -eq 0 ]; then
+		tape[$tptr]=0
+	elif [ $_nvalue -gt 65535 ]; then
+		_nvalue=$(($_nvalue - 65536))
+		cell16 $_nvalue
+	elif [ $_nvalue -lt 0 ]; then
+		_nvalue=$(($_nvalue + 65536))
+		cell16 $_nvalue
+	else
+		tape[$tptr]=$_nvalue
+	fi
+}
+
 cell32() {
 	set +u
 	local _value="$1"
@@ -192,6 +211,7 @@ cc=0
 
 case "$cflag" in
 	8) cell=cell8;;
+	16) cell=cell16;;
 	32) cell=cell32;;
 	*) echo "$PROGNAME: Unsupported cell size - $cflag"
 	   exit 1;;
