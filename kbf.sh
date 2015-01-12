@@ -6,16 +6,18 @@ readonly PROGNAME="`basename $0`"
 readonly VERSION='v1.0'
 
 usage() {
-	echo "usage: $PROGNAME [-ds] [-t size] file[.b]" >&2
+	echo "usage: $PROGNAME [-ds] [-c size] [-t size] file[.b]" >&2
 }
 
+cflag=32
 dflag=0
 sflag=0
 tflag=999
 file=''
 
-while getopts ":dst:" opt;do
+while getopts ":c:dst:" opt;do
 	case $opt in
+		c) cflag=$OPTARG;;
 		d) dflag=1;;
 		s) sflag=1;;
 		t) tflag=$OPTARG;;
@@ -102,12 +104,13 @@ move() {
 	tptr=$_index
 }
 
-cell() {
+cell32() {
 	set +u
 	local _value="$1"
 	set -u
+	local _nvalue=$(( ${tape[$tptr]} + $_value ))
 
-	tape[$tptr]=$(( ${tape[$tptr]} + $_value ))
+	tape[$tptr]=$_nvalue
 }
 
 output() {
@@ -168,6 +171,12 @@ ic=0
 iptr=0
 cc=0
 
+case "$cflag" in
+	32) cell=cell32;;
+	*) echo "$PROGNAME: Unsupported cell size - $cflag"
+	   exit 1;;
+esac
+
 trap stats USR1
 [ $dflag -eq 1 ] && echo PID: $$ >&2
 
@@ -176,8 +185,8 @@ while [ $iptr -lt ${#i[*]} ]; do
 	case ${i[$iptr]} in
 		'<') move -1;;
 		'>') move +1;;
-		'-') cell -1;;
-		'+') cell +1;;
+		'-') $cell -1;;
+		'+') $cell +1;;
 		'.') output;;
 		',') input;;
 		'[') if [ ${tape[$tptr]} -eq 0 ]; then
