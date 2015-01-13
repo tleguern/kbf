@@ -6,21 +6,23 @@ readonly PROGNAME="`basename $0`"
 readonly VERSION='v1.0'
 
 usage() {
-	echo "usage: $PROGNAME [-ds] [-c size] [-t size] file[.b]" >&2
+	echo "usage: $PROGNAME [-ds] [-c size] [-t size] [-O level] file[.b]" >&2
 }
 
 cflag=32
 dflag=0
 sflag=0
 tflag=999
+Oflag=0
 file=''
 
-while getopts ":c:dst:" opt;do
+while getopts ":c:dst:O:" opt;do
 	case $opt in
 		c) cflag=$OPTARG;;
 		d) dflag=1;;
 		s) sflag=1;;
 		t) tflag=$OPTARG;;
+		O) Oflag=$OPTARG;;
 		:) echo "$PROGNAME: option requires an argument -- $OPTARG" >&2;
 		   usage; exit 1;;	# NOTREACHED
 		\?) echo "$PROGNAME: unkown option -- $OPTARG" >&2;
@@ -49,6 +51,10 @@ set -u
 
 if [ $tflag -le 0 ]; then
 	echo "$PROGNAME: tape size is invalid" >&2
+	exit 1
+fi
+if [ $Oflag -lt 0 ] || [ $Oflag -gt 1 ]; then
+	echo "$PROGNAME: unsupported optimization level - $Oflag" >&2
 	exit 1
 fi
 if ! [ -e "$file" ]; then
@@ -202,7 +208,15 @@ stats() {
 	echo State of the tape: ${tape[*]}
 }
 
-array i "`cat $file | sed 's/./& /g'`"
+opti1() {
+	if [ $Oflag -eq 1 ]; then
+		tr -Cd '[]<>+\-,.'
+	else
+		cat
+	fi
+}
+
+array i "$(cat $file | opti1 | sed 's/./& /g')"
 array tape 0
 tptr=0
 ic=0
