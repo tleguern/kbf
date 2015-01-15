@@ -154,7 +154,11 @@ cell32() {
 	set -u
 	local _nvalue=$(( ${tape[$tptr]} + $_value ))
 
-	tape[$tptr]=$_nvalue
+	if [ $_value -eq 0 ]; then
+		tape[$tptr]=0
+	else
+		tape[$tptr]=$_nvalue
+	fi
 }
 
 output() {
