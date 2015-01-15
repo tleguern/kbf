@@ -53,7 +53,7 @@ if [ $tflag -le 0 ]; then
 	echo "$PROGNAME: tape size is invalid" >&2
 	exit 1
 fi
-if [ $Oflag -lt 0 ] || [ $Oflag -gt 1 ]; then
+if [ $Oflag -lt 0 ] || [ $Oflag -gt 2 ]; then
 	echo "$PROGNAME: unsupported optimization level - $Oflag" >&2
 	exit 1
 fi
@@ -213,14 +213,22 @@ stats() {
 }
 
 opti1() {
-	if [ $Oflag -eq 1 ]; then
+	if [ $Oflag -ge 1 ]; then
 		tr -Cd '[]<>+\-,.'
 	else
 		cat
 	fi
 }
 
-array i "$(cat $file | opti1 | sed 's/./& /g')"
+opti2() {
+	if [ $Oflag -ge 2 ]; then
+		sed 's/\[ - \]/0/g'
+	else
+		cat
+	fi
+}
+
+array i "$(cat $file | opti1 | sed 's/./& /g' | opti2)"
 array tape 0
 tptr=0
 ic=0
@@ -253,6 +261,7 @@ while [ $iptr -lt ${#i[*]} ]; do
 		']') if [ ${tape[$tptr]} -ne 0 ]; then
 			jump=`matchingbrace ']'`
 		     fi;;
+		'0') $cell 0;;	# IR operand created by opti2
 		*) cc=$(( $cc + 1 ));;
 	esac
 	[ $dflag -eq 1 ] && echo " ${i[$iptr]}: [$tptr]=${tape[$tptr]}" >&2
