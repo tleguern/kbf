@@ -249,18 +249,18 @@ trap stats USR1
 while [ $iptr -lt ${#i[*]} ]; do
 	jump=0
 	case ${i[$iptr]} in
-		'<') move -1;;
 		'>') move +1;;
-		'-') $cell -1;;
+		'<') move -1;;
 		'+') $cell +1;;
-		'.') output;;
-		',') input;;
+		'-') $cell -1;;
 		'[') if [ ${tape[$tptr]} -eq 0 ]; then
 			jump=$((`matchingbrace '['` + 1))
 		     fi;;
 		']') if [ ${tape[$tptr]} -ne 0 ]; then
 			jump=`matchingbrace ']'`
 		     fi;;
+		'.') output;;
+		',') input;;
 		'0') $cell 0;;	# IR operand created by opti2
 		*) cc=$(( $cc + 1 ));;
 	esac
