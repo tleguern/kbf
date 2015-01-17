@@ -19,6 +19,12 @@ Some details about this implementation:
 - Fixed number of cells (default to 1000);
 - Newline is 10;
 
+kbf can be used directly or as a library. The usage and behaviour of 
+these two modes are described in there corresponding man pages: kbf.1 
+and kbf.3. It is possible to read them on any good systems like this:
+
+    $ mandoc kbf.1 | less
+
 Installation
 ------------
 
