@@ -289,8 +289,8 @@ while [ $iptr -lt ${#i[*]} ]; do
 			jump=`matchingbrace ']'`
 		     fi;;
 		'.') output;;
-		',') input;;
 		'0') $cell 0;;	# IR operand created by opti2
+		',') input;;
 		*) cc=$(( $cc + 1 ));;
 	esac
 	[ $dflag -eq 1 ] && echo " ${i[$iptr]}: [$tptr]=${tape[$tptr]}" >&2

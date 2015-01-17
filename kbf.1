@@ -1,0 +1,78 @@
+.\"	$OpenBSD:  Exp $
+.\"
+.\" Copyright (c) 2014 Tristan Le Guern <tleguern@bouledef.eu>
+.\"
+.\" Permission to use, copy, modify, and distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd $Mdocdate: January 17 2015 $
+.Dt NAME 1
+.Os
+.Sh NAME
+.Nm kbf
+.Nd Brainfuck interpreter written in Korn shell
+.Sh SYNOPSIS
+.Nm
+.Op Fl dsD
+.Op Fl c Cm size
+.Op Fl t Cm size
+.Op Fl O Cm level
+.Ar file[.b]
+.Sh DESCRIPTION
+The
+.Nm
+utility interprets the Brainfuck programming language.
+.Pp
+The arguments are as follows:
+.Bl -tag -width Ds
+.It Fl d
+Enable debug mode.
+.It Fl s
+Print information about the program after execution.
+.It Fl D
+Print the intermediary representation of the program and quit.
+.It Fl c
+Allow to choose the size of the cells, in bits. Accepted values are 8, 
+16 and 32.
+.It Fl t
+Allow to choose the size of the tape.
+.It Fl O
+Allow to choose the optimization level. Accepted values are 0, 1 and 2.
+.Bl -tag -compact
+.It 0
+Disable all optimization.
+.It 1
+Remove every comment, space and new line in the program.
+.It 2
+Replace every "zero loop" by a single instruction.
+.El
+.El
+.\" The following requests should be uncommented and used where appropriate.
+.\" .Sh ENVIRONMENT
+.\" For sections 1, 6, 7, and 8 only.
+.Sh EXIT STATUS
+.Ex -std
+.\" For sections 1, 6, and 8 only.
+.\" .Sh EXAMPLES
+.\" .Sh DIAGNOSTICS
+.\" For sections 1, 4, 6, 7, 8, and 9 printf/stderr messages only.
+.Sh SEE ALSO
+.Xr ksh 1
+.\" .Sh STANDARDS
+.\" .Sh HISTORY
+.Sh AUTHORS
+The
+.Nm
+utility was written by
+.An Tristan Le Guern Aq Mt tleguern@bouledef.eu .
+.\" .Sh CAVEATS
+.\" .Sh BUGS
