@@ -2,7 +2,12 @@ kbf - the Korn shell BrainFuck interpreter
 ==========================================
 
 kbf is a brainfuck interpreter written in korn shell. It is currently
-compatible with OpenBSD pdksh and bash.
+compatible with the following shells:
+
+- Public Domain Korn SHell - pdksh;
+- OpenBSD pdksh;
+- MirBSD Korn Shell (mksh);
+- bash.
 
 Some details about this implementation:
 
