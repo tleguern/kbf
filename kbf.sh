@@ -274,7 +274,6 @@ esac
 [ $Dflag -eq 1 ] && echo ${i[*]} && exit 0
 
 trap stats USR1
-[ $dflag -eq 1 ] && echo PID: $$ >&2
 
 while [ $iptr -lt ${#i[*]} ]; do
 	jump=0
