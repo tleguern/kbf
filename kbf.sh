@@ -72,25 +72,22 @@ if ! [ -r "$file" ]; then
 	exit 1
 fi
 
-array() {
-	set +u
-	local _array_name="$1"; shift
+arrayksh() {
+	local _array_name="$1"
+	shift
+	set -A $_array_name -- $@
+}
 
-	if [ -n "$BASH_VERSION" ]; then
-		declare -ga $_array_name
-		local _array_i=0
-		local _array_j=0
-		for _array_i in $@; do
-			declare -ga "$_array_name[$_array_j]=$_array_i"
-			_array_j=$(( $_array_j + 1 ))
-		done
-	elif [ -n "$KSH_VERSION" ]; then
-		set -A $_array_name -- $@
-	else
-		echo "Error: unsuported shell :(" >&2
-		exit 1
-	fi
-	set -u
+arraybash() {
+	local _array_name="$1"
+	shift
+	declare -ga $_array_name
+	local _array_i=0
+	local _array_j=0
+	for _array_i in $@; do
+		declare -ga "$_array_name[$_array_j]=$_array_i"
+		_array_j=$(( $_array_j + 1 ))
+	done
 }
 
 move() {
@@ -186,7 +183,7 @@ matchingbrace() {
 	local size=${#i[*]}
 
 	if [ "$_brace" = "]" ]; then
-		array i "`echo ${i[*]} | rev`"
+		$array i "`echo ${i[*]} | rev`"
 		liptr=$(( $size - $liptr - 1 ))
 	fi
 	while [ $liptr -lt $size ]; do
@@ -201,7 +198,7 @@ matchingbrace() {
 		liptr=$(( $liptr + 1 ))
 	done
 	if [ "$_brace" = "]" ]; then
-		array i "`echo ${i[*]} | rev`"
+		$array i "`echo ${i[*]} | rev`"
 		liptr=$(( $size - $liptr - 1 ))
 	fi
 	if [ $lc -ne 0 ]; then
@@ -233,8 +230,19 @@ opti2() {
 	fi
 }
 
-array i "$(cat $file | opti1 | sed 's/./& /g' | opti2)"
-array tape 0
+set +u
+if [ -n "$BASH_VERSION" ]; then
+	array=arraybash
+elif [ -n "$KSH_VERSION" ]; then
+	array=arrayksh
+else
+	echo "Error: unsuported shell :(" >&2
+	exit 1
+fi
+set -u
+
+$array i "$(cat $file | opti1 | sed 's/./& /g' | opti2)"
+$array tape 0
 tptr=0
 ic=0
 iptr=0
