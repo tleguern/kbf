@@ -5,10 +5,10 @@ kbf is a brainfuck interpreter written in korn shell. It is currently
 compatible with the following shells:
 
 - Public Domain Korn SHell - pdksh;
-- OpenBSD pdksh;
-- MirBSD Korn Shell (mksh);
-- bash;
-- zsh.
+- OpenBSD Korn SHell - oksh
+- MirBSD Korn SHell - mksh;
+- GNU Bourne-Again SHell - bash;
+- The Z shell - zsh.
 
 Some details about this implementation:
 
