@@ -156,6 +156,9 @@ cell32() {
 
 	if [ $_value -eq 0 ]; then
 		tape[$tptr]=0
+	elif [ $_nvalue -lt 0 ]; then
+		_nvalue=$(($_nvalue + 9223372036854775808))
+		cell32 $_nvalue
 	else
 		tape[$tptr]=$_nvalue
 	fi

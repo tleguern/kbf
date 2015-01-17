@@ -13,8 +13,8 @@ Some details about this implementation:
 
 - Lazy-initialized cells;
 - Support for 8, 16 and 32 bits cells;
-- Memory wrapping for 8 and 16 bits cells;
-- No negative cell number, except with 32 bits cells;
+- Memory wrapping;
+- No negative cell number;
 - Fixed number of cells (default to 1000);
 - Newline is 10;
 
