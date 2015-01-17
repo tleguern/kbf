@@ -7,7 +7,8 @@ compatible with the following shells:
 - Public Domain Korn SHell - pdksh;
 - OpenBSD pdksh;
 - MirBSD Korn Shell (mksh);
-- bash.
+- bash;
+- zsh.
 
 Some details about this implementation:
 

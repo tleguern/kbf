@@ -90,6 +90,18 @@ arraybash() {
 	done
 }
 
+arrayzsh() {
+	local _array_name="$1"
+	shift
+	typeset -ga $_array_name
+	local _array_i=0
+	local _array_j=0
+	for _array_i in $@; do
+		typeset -g "$_array_name[$_array_j]"="$_array_i"
+		_array_j=$(( $_array_j + 1 ))
+	done
+}
+
 move() {
 	set +u
 	local _index=$(( $tptr + $1 ))
@@ -183,7 +195,7 @@ matchingbrace() {
 	local size=${#i[*]}
 
 	if [ "$_brace" = "]" ]; then
-		$array i "`echo ${i[*]} | rev`"
+		$array i `echo ${i[*]} | rev`
 		liptr=$(( $size - $liptr - 1 ))
 	fi
 	while [ $liptr -lt $size ]; do
@@ -198,7 +210,7 @@ matchingbrace() {
 		liptr=$(( $liptr + 1 ))
 	done
 	if [ "$_brace" = "]" ]; then
-		$array i "`echo ${i[*]} | rev`"
+		$array i `echo ${i[*]} | rev`
 		liptr=$(( $size - $liptr - 1 ))
 	fi
 	if [ $lc -ne 0 ]; then
@@ -235,13 +247,16 @@ if [ -n "$BASH_VERSION" ]; then
 	array=arraybash
 elif [ -n "$KSH_VERSION" ]; then
 	array=arrayksh
+elif [ -n "$ZSH_VERSION" ]; then
+	setopt ksharrays
+	array=arrayzsh
 else
 	echo "Error: unsuported shell :(" >&2
 	exit 1
 fi
 set -u
 
-$array i "$(cat $file | opti1 | sed 's/./& /g' | opti2)"
+$array i $(cat $file | opti1 | sed 's/./& /g' | opti2)
 $array tape 0
 tptr=0
 ic=0
