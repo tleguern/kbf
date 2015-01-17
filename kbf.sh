@@ -6,7 +6,7 @@ readonly PROGNAME="`basename $0`"
 readonly VERSION='v1.0'
 
 usage() {
-	echo "usage: $PROGNAME [-ds] [-c size] [-t size] [-O level] file[.b]" >&2
+	echo "usage: $PROGNAME [-dsD] [-c size] [-t size] [-O level] file[.b]" >&2
 }
 
 cflag=32
@@ -14,15 +14,17 @@ dflag=0
 sflag=0
 tflag=999
 Oflag=0
+Dflag=0
 file=''
 
-while getopts ":c:dst:O:" opt;do
+while getopts ":c:dst:O:D" opt;do
 	case $opt in
 		c) cflag=$OPTARG;;
 		d) dflag=1;;
 		s) sflag=1;;
 		t) tflag=$OPTARG;;
 		O) Oflag=$OPTARG;;
+		D) Dflag=1;;
 		:) echo "$PROGNAME: option requires an argument -- $OPTARG" >&2;
 		   usage; exit 1;;	# NOTREACHED
 		\?) echo "$PROGNAME: unkown option -- $OPTARG" >&2;
@@ -245,6 +247,8 @@ case "$cflag" in
 	*) echo "$PROGNAME: Unsupported cell size - $cflag"
 	   exit 1;;
 esac
+
+[ $Dflag -eq 1 ] && echo ${i[*]} && exit 0
 
 trap stats USR1
 [ $dflag -eq 1 ] && echo PID: $$ >&2
