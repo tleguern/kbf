@@ -1,6 +1,6 @@
 .\"	$OpenBSD:  Exp $
 .\"
-.\" Copyright (c) 2014 Tristan Le Guern <tleguern@bouledef.eu>
+.\" Copyright (c) 2015 Tristan Le Guern <tleguern@bouledef.eu>
 .\"
 .\" Permission to use, copy, modify, and distribute this software for any
 .\" purpose with or without fee is hereby granted, provided that the above
@@ -15,7 +15,7 @@
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
 .Dd $Mdocdate: January 17 2015 $
-.Dt NAME 1
+.Dt KBF 1 URM
 .Os
 .Sh NAME
 .Nm kbf
@@ -30,7 +30,13 @@
 .Sh DESCRIPTION
 The
 .Nm
-utility interprets the Brainfuck programming language.
+utility interprets the Brainfuck programming language. It only
+recognizes the 8 classics operators: + \- < > [ ] , .
+.Pp
+It is not allowed to move beyond the limitation of the tape, but it is allowed to increment beyond the cells upper limit and to decrement a zero cell. In these cases the value will wrap, depending on the option
+.Fl c .
+.Pp
+The output operator, \&., prints the value 10 as a newline.
 .Pp
 The arguments are as follows:
 .Bl -tag -width Ds
@@ -53,7 +59,7 @@ Disable all optimization.
 .It 1
 Remove every comment, space and new line in the program.
 .It 2
-Replace every "zero loop" by a single instruction.
+Replace some simple loops with shorthand operations.
 .El
 .El
 .\" The following requests should be uncommented and used where appropriate.
@@ -67,6 +73,7 @@ Replace every "zero loop" by a single instruction.
 .\" For sections 1, 4, 6, 7, 8, and 9 printf/stderr messages only.
 .Sh SEE ALSO
 .Xr ksh 1
+.Xr kbf 3
 .\" .Sh STANDARDS
 .\" .Sh HISTORY
 .Sh AUTHORS
