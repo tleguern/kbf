@@ -180,6 +180,31 @@ matchingbrace() {
 	echo $liptr
 }
 
+nextzero() {
+	local ltptr=$tptr
+	local size=${#tape[*]}
+
+	while [ $ltptr -lt $size ]; do
+		if [ ${tape[$ltptr]} -eq 0 ]; then
+			break
+		fi
+		ltptr=$(( $ltptr + 1 ))
+	done
+	tptr=$ltptr
+}
+
+prevzero() {
+	local ltptr=$tptr
+
+	while [ $ltptr -gt 0 ]; do
+		if [ ${tape[$ltptr]} -eq 0 ]; then
+			break
+		fi
+		ltptr=$(( $ltptr - 1 ))
+	done
+	tptr=$ltptr
+}
+
 stats() {
 	echo Number of cells used: ${#tape[*]}/$(( $tflag + 1 ))
 	echo Number of instructions: $(( $ic - $cc ))
@@ -196,7 +221,7 @@ opti1() {
 
 opti2() {
 	if [ $Oflag -ge 2 ]; then
-		sed 's/\[ - \]/0/g'
+		sed 's/\[ - \]/0/g'|sed 's/\[ > \]/>>/g'|sed 's/\[ < \]/<</g'
 	else
 		cat
 	fi
@@ -253,6 +278,8 @@ kbf() {
 			'.') output;;
 			'0') $cell 0;;	# IR operand created by opti2
 			',') input;;
+			'<<') prevzero;;
+			'>>') nextzero;;
 			*) cc=$(( $cc + 1 ));;
 		esac
 		[ $dflag -eq 1 ] && echo " ${i[$iptr]}: [$tptr]=${tape[$tptr]}" >&2
