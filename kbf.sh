@@ -230,9 +230,9 @@ opti1() {
 
 opti2() {
 	if [ $Oflag -ge 2 ]; then
-		sed "s/$op_open $op_sub $op_close/0/g" \
-		    | sed "s/$op_open $op_right $op_close/>>/g" \
-		    | sed "s/$op_open $op_left $op_close/<</g"
+		sed "s/\\$op_open $op_sub \\$op_close/0/g" \
+		    | sed "s/\\$op_open $op_right \\$op_close/>>/g" \
+		    | sed "s/\\$op_open $op_left \\$op_close/<</g"
 	else
 		cat
 	fi
@@ -269,7 +269,7 @@ init() {
 }
 
 kbf() {
-	[ $Dflag -eq 1 ] && echo ${i[*]} && exit 0
+	[ $Dflag -eq 1 ] && echo "${i[*]}" && exit 0
 
 	trap stats USR1
 
