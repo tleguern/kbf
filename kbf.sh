@@ -203,6 +203,11 @@ opti2() {
 }
 
 init() {
+	tptr=0
+	ic=0
+	iptr=0
+	cc=0
+
 	set +u
 	if [ -n "$BASH_VERSION" ]; then
 		array=arraybash
@@ -228,11 +233,6 @@ init() {
 }
 
 kbf() {
-	tptr=0
-	ic=0
-	iptr=0
-	cc=0
-
 	[ $Dflag -eq 1 ] && echo ${i[*]} && exit 0
 
 	trap stats USR1
