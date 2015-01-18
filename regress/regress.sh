@@ -11,11 +11,12 @@ t() {
 	# $1 -> exit code
 	# $2 -> file containing the expected result
 	# $3 -> $test expression
-	echo "Run $kbf \"$3\", expect exit code $1"
+	# $4 -> Options to kbf
+	echo "Run $kbf $4 \"$3\", expect exit code $1"
 
 	tmp=`mktemp -t kbf.XXXXXXXX`
 	set +e
-	$kbf -s $3 > $tmp 2> /dev/null
+	$kbf $4 -s $3 > $tmp 2> /dev/null
 	ret=$?
 	set -e
 	if [ $ret -ne $1 ]; then
@@ -46,6 +47,7 @@ failed() {
 t 0 'headcom.res' 'headcom.b'
 t 0 '15.res' '15.b'
 t 0 '256.res' '256.b'
+t 0 '256-8bits.res' '256.b' '-c 8'
 t 0 'selfsize.res' 'selfsize.b'
 t 0 'doubleloop.res' 'doubleloop.b'
 t 0 '50cells.res' '50cells.b'
