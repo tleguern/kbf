@@ -17,11 +17,11 @@
 
 set -e
 
-readonly PROGNAME="`basename $0`"
+readonly KBFPROGNAME="`basename $0`"
 readonly VERSION='v1.0'
 
 usage() {
-	echo "usage: $PROGNAME [-dsD] [-c size] [-t size] [-O level] file[.b]" >&2
+	echo "usage: $KBFPROGNAME [-dsD] [-c size] [-t size] [-O level] file[.b]" >&2
 }
 
 cflag=32
@@ -252,7 +252,7 @@ init() {
 		8) cell=cell8;;
 		16) cell=cell16;;
 		32) cell=cell32;;
-		*) echo "$PROGNAME: Unsupported cell size - $cflag"
+		*) echo "$KBFPROGNAME: Unsupported cell size - $cflag"
 		   exit 1;;
 	esac
 }
@@ -297,7 +297,7 @@ kbf() {
 	fi
 }
 
-if [ "${PROGNAME%.sh}" = "kbf" ]; then
+if [ "${KBFPROGNAME%.sh}" = "kbf" ]; then
 	while getopts ":c:dst:O:D" opt;do
 		case $opt in
 			c) cflag=$OPTARG;;
@@ -306,9 +306,9 @@ if [ "${PROGNAME%.sh}" = "kbf" ]; then
 			t) tflag=$OPTARG;;
 			O) Oflag=$OPTARG;;
 			D) Dflag=1;;
-			:) echo "$PROGNAME: option requires an argument -- $OPTARG" >&2;
+			:) echo "$KBFPROGNAME: option requires an argument -- $OPTARG" >&2;
 			   usage; exit 1;;	# NOTREACHED
-			\?) echo "$PROGNAME: unkown option -- $OPTARG" >&2;
+			\?) echo "$KBFPROGNAME: unkown option -- $OPTARG" >&2;
 			   usage; exit 1;;	# NOTREACHED
 			*) usage; exit 1;;	# NOTREACHED
 		esac
@@ -316,7 +316,7 @@ if [ "${PROGNAME%.sh}" = "kbf" ]; then
 	shift $(( $OPTIND -1 ))
 
 	if [ -z "$1" ]; then
-		echo "$PROGNAME: file expected" >&2
+		echo "$KBFPROGNAME: file expected" >&2
 		usage
 		exit 1
 	else
@@ -325,7 +325,7 @@ if [ "${PROGNAME%.sh}" = "kbf" ]; then
 	fi
 
 	if [ $# -ge 1 ]; then
-		echo "$PROGNAME: invalid trailing chars -- $@" >&2
+		echo "$KBFPROGNAME: invalid trailing chars -- $@" >&2
 		usage
 		exit 1
 	fi
@@ -333,23 +333,23 @@ if [ "${PROGNAME%.sh}" = "kbf" ]; then
 	set -u
 
 	if [ $tflag -le 0 ]; then
-		echo "$PROGNAME: tape size is invalid" >&2
+		echo "$KBFPROGNAME: tape size is invalid" >&2
 		exit 1
 	fi
 	if [ $Oflag -lt 0 ] || [ $Oflag -gt 2 ]; then
-		echo "$PROGNAME: unsupported optimization level - $Oflag" >&2
+		echo "$KBFPROGNAME: unsupported optimization level - $Oflag" >&2
 		exit 1
 	fi
 	if ! [ -e "$file" ]; then
-		echo "$PROGNAME: no such file $file" >&2
+		echo "$KBFPROGNAME: no such file $file" >&2
 		exit 1
 	fi
 	if ! [ -f "$file" ]; then
-		echo "$PROGNAME: invalid file $file" >&2
+		echo "$KBFPROGNAME: invalid file $file" >&2
 		exit 1
 	fi
 	if ! [ -r "$file" ]; then
-		echo "$PROGNAME: can't read $file" >&2
+		echo "$KBFPROGNAME: can't read $file" >&2
 		exit 1
 	fi
 
