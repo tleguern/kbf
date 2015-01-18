@@ -32,6 +32,15 @@ Oflag=0
 Dflag=0
 file=''
 
+op_add='+'
+op_sub='-'
+op_left='<'
+op_right='>'
+op_open='['
+op_close=']'
+op_in=','
+op_out='.'
+
 arrayksh() {
 	local _array_name="$1"
 	shift
@@ -154,14 +163,14 @@ matchingbrace() {
 	local liptr=$iptr
 	local size=${#i[*]}
 
-	if [ "$_brace" = "]" ]; then
+	if [ "$_brace" = "$op_close" ]; then
 		$array i `echo ${i[*]} | rev`
 		liptr=$(( $size - $liptr - 1 ))
 	fi
 	while [ $liptr -lt $size ]; do
 		case ${i[$liptr]} in
-			'[') lc=$(( $lc + 1 ));;
-			']') lc=$(( $lc - 1 ));;
+			"$op_open") lc=$(( $lc + 1 ));;
+			"$op_close") lc=$(( $lc - 1 ));;
 			*) :;;
 		esac
 		if [ $lc -eq 0 ]; then
@@ -169,7 +178,7 @@ matchingbrace() {
 		fi
 		liptr=$(( $liptr + 1 ))
 	done
-	if [ "$_brace" = "]" ]; then
+	if [ "$_brace" = "$op_close" ]; then
 		$array i `echo ${i[*]} | rev`
 		liptr=$(( $size - $liptr - 1 ))
 	fi
@@ -213,7 +222,7 @@ stats() {
 
 opti1() {
 	if [ $Oflag -ge 1 ]; then
-		tr -Cd '[]<>+\-,.'
+		tr -Cd "${op_open}${op_close}${op_left}${op_right}${op_add}${op_sub}${op_in}${op_out}"
 	else
 		cat
 	fi
@@ -221,7 +230,9 @@ opti1() {
 
 opti2() {
 	if [ $Oflag -ge 2 ]; then
-		sed 's/\[ - \]/0/g'|sed 's/\[ > \]/>>/g'|sed 's/\[ < \]/<</g'
+		sed "s/$op_open $op_sub $op_close/0/g" \
+		    | sed "s/$op_open $op_right $op_close/>>/g" \
+		    | sed "s/$op_open $op_left $op_close/<</g"
 	else
 		cat
 	fi
@@ -265,21 +276,32 @@ kbf() {
 	while [ $iptr -lt ${#i[*]} ]; do
 		jump=0
 		case ${i[$iptr]} in
-			'>') move +1;;
-			'<') move -1;;
-			'+') $cell +1;;
-			'-') $cell -1;;
-			'[') if [ ${tape[$tptr]} -eq 0 ]; then
-				jump=$((`matchingbrace '['` + 1))
-			     fi;;
-			']') if [ ${tape[$tptr]} -ne 0 ]; then
-				jump=`matchingbrace ']'`
-			     fi;;
-			'.') output;;
-			'0') $cell 0;;	# IR operand created by opti2
-			',') input;;
-			'<<') prevzero;;
-			'>>') nextzero;;
+			"$op_right")
+				move +1;;
+			"$op_left")
+				move -1;;
+			"$op_add")
+				$cell +1;;
+			"$op_sub")
+				$cell -1;;
+			"$op_open")
+				if [ ${tape[$tptr]} -eq 0 ]; then
+					jump=$((`matchingbrace $op_open` + 1))
+				fi;;
+			"$op_close")
+				if [ ${tape[$tptr]} -ne 0 ]; then
+					jump=`matchingbrace $op_close`
+				fi;;
+			"$op_out")
+				output;;
+			'0')
+				$cell 0;;
+			"$op_in")
+				input;;
+			'<<')
+				prevzero;;
+			'>>')
+				nextzero;;
 			*) cc=$(( $cc + 1 ));;
 		esac
 		[ $dflag -eq 1 ] && echo " ${i[$iptr]}: [$tptr]=${tape[$tptr]}" >&2
