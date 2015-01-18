@@ -1,0 +1,219 @@
+.\"	$OpenBSD:  Exp $
+.\"
+.\" Copyright (c) 2015 Tristan Le Guern <tleguern@bouledef.eu>
+.\"
+.\" Permission to use, copy, modify, and distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd $Mdocdate: January 18 2015 $
+.Dt KBF 3 PRM
+.Os
+.Sh NAME
+.Nm kbf
+.Nd Brainfuck interpreter written in Korn shell
+.Sh SYNOPSIS
+.\" .In kbf.sh
+.Fn init
+.Fn kbf
+.Fo arrayksh
+.Fa "$name"
+.Fa "$*"
+.Fc
+.Fo arraybash
+.Fa "$name"
+.Fa "$*"
+.Fc
+.Fo arrayzsh
+.Fa "$name"
+.Fa "$*"
+.Fc
+.Fo move
+.Fa "$index"
+.Fc
+.Fo cell8
+.Fa "$value"
+.Fc
+.Fo cell16
+.Fa "$value"
+.Fc
+.Fo cell32
+.Fa "$value"
+.Fc
+.Fn output
+.Fn input
+.Fn nextzero
+.Fn prevzero
+.Fn stats
+.Fn opti1
+.Fn opti2
+.Sh DESCRIPTION
+The
+.Fn init
+function defines the global variables
+.Va $i ,
+.Va $tape ,
+.Va $iptr
+and
+.Va $tptr ,
+which are respectively the
+.Sy Instructions Array ,
+the
+.Sy Memory Tape ,
+the
+.Sy Instruction Pointer
+and the
+.Sy Tape Pointer .
+It also defines two shortands variables
+.Va $array
+and
+.Va $cell
+which respectively contains the name of either
+.Fn arrayksh ,
+.Fn arraybash
+or
+.Fn arrayzsh
+and
+.Fn cell8 ,
+.Fn cell16
+or
+.Fn cell32 .
+.Pp
+The
+.Fn arrayksh ,
+.Fn arraybash
+and
+.Fn arrayzsh
+are functions used to create indexed arrays. They take an unlimited
+number of parameters. The first one,
+.Fa name ,
+is used as the array name. The following arguments are inserted as
+values in the array.
+.Pp
+The
+.Fn move
+function moves the
+.Sy Tape pointer
+by the amount of bytes contained in
+.Va $index .
+This number can be positive or negative. It is not possible to move
+bellow the position zero or after the position
+.Va $tflag .
+.Pp
+The
+.Fn cell8 ,
+.Fn cell16
+and
+.Fn cell32
+are functions used to increase or decrease the value under the
+.Sy Tape Pointer ,
+by the amount given as the parameter
+.Va $value .
+This value can be positive or negative. It is possible to give a large
+value that will cause an overflow, also called wrap in Brainfuck
+terminologie. The value at wich a cell will wrap depend on the function
+used.
+The special value 0 is used to reset the cell value directly at 0.
+.Pp
+The
+.Fn output
+function writes the
+.Tn ASCII
+representation of the byte under the
+.Sy Tape Pointer .
+.Pp
+The
+.Fn input
+functions writes the value of the
+.Tn ASCII
+byte read from stdin in the
+cell under the
+.Sy Tape Pointer .
+.Pp
+The
+.Fn nextzero
+function moves the
+.Sy Tape Pointer
+to the next cell on the right with a value of zero. If none are found,
+it moves it to the end of the
+.Sy Memory Tape .
+.Pp
+The
+.Fn prevzero
+function moves the
+.Sy Tape Pointer
+to the next cell on the left with a value of zero. If none are found,
+it moves it to the beginning of the
+.Sy Memory Tape .
+.Pp
+The
+.Fn stats
+function writes statistics about the program, such as the number of cells used,
+the number of instructions executed and the state of the
+.Sy Memory Tape .
+.Pp
+The
+.Fn opti1
+function performs the first level of optimisation. It reads arbitrary
+text from stdin and rewrites it on stdout with every comment,
+whitespace and newline filter out.
+.Pp
+The
+.Fn opti2
+function performs the second level of optimisation. It read
+pre-formated brainfuck operators from stdin, each separated from the
+others with a single whitespace, and replace a few simple loops with
+shorthand operands. See
+.Sx INTERMEDIARY REPRESENTATION
+for more details.
+.Pp
+The
+.Fn kbf
+function executes the instructions contained in the
+.Sy Instructions Array
+with the help of the
+.Sy Instructions Pointer .
+.Sh INTERMEDIARY REPRESENTATION
+The
+.Nm
+utility is transforms some parts of the program into new operators, for
+performance purpose. For the moment three new operators are available,
+introduced by
+.Fn opti2 :
+.Bl -tag -width Ds
+.It 0
+Replace the clear loop, [-].
+.It >>
+Replace the next zero loop, [>].
+.It <<
+Replace the prev zero loop, [<].
+.El
+.Sh EXAMPLES
+This example runs a simple multiplication loop on a
+.Sy Memory Tape
+already initialized:
+.Bd -literal -offset indent
+\&. ./kbf.sh
+
+init
+$array i "+ + + [ > + + + < - ]"
+$array tape 5 2
+kbf
+stats
+.Ed
+.Sh SEE ALSO
+.Xr kbf 1
+.Sh AUTHORS
+The
+.Nm
+utility was written by
+.An Tristan Le Guern Aq Mt tleguern@bouledef.eu .
+
