@@ -47,7 +47,7 @@ Print information about the program after execution.
 .It Fl D
 Print the intermediary representation of the program and quit.
 .It Fl c
-Allow to choose the size of the cells, in bits. Accepted values are 8, 
+Allow to choose the size of the cells, in bits. Accepted values are 8,
 16 and 32.
 .It Fl t
 Allow to choose the size of the tape.
@@ -59,6 +59,9 @@ Disable all optimization.
 .It 1
 Remove every comment, space and new line in the program.
 .It 2
+Remove empty loops and null actions, like a substraction
+following an addition.
+.It 3
 Replace some simple loops with shorthand operations.
 .El
 .El

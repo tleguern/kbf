@@ -241,7 +241,29 @@ opti1() {
 }
 
 opti2() {
+	set +u
+	local _i="$*"
+	set -u
 	if [ $Oflag -ge 2 ]; then
+		count=${#_i}
+		while true; do
+			_i=$(echo $_i | sed "s/\\$op_open\\$op_close//g" \
+			    | sed "s/$op_add$op_sub//g" \
+			    | sed "s/$op_sub$op_add//g" \
+			    | sed "s/$op_left$op_right//g" \
+			    | sed "s/$op_right$op_left//g")
+			if [ $count -eq ${#_i} ]; then
+				break
+			else
+				count=${#_i}
+			fi
+		done
+	fi
+	echo "$_i"
+}
+
+opti3() {
+	if [ $Oflag -ge 3 ]; then
 		sed "s/\\$op_open $op_sub \\$op_close/0/g" \
 		    | sed "s/\\$op_open $op_right \\$op_close/>>/g" \
 		    | sed "s/\\$op_open $op_left \\$op_close/<</g"
@@ -369,7 +391,7 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ]; then
 		echo "$KBFPROGNAME: tape size is invalid" >&2
 		exit 1
 	fi
-	if [ $Oflag -lt 0 ] || [ $Oflag -gt 2 ]; then
+	if [ $Oflag -lt 0 ] || [ $Oflag -gt 3 ]; then
 		echo "$KBFPROGNAME: unsupported optimization level - $Oflag" >&2
 		exit 1
 	fi
@@ -387,7 +409,9 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ]; then
 	fi
 
 	init
-	$array i $(cat $file | opti1 | sed 's/./& /g' | opti2)
+	i="$(cat $file | opti1)"
+	i="$(opti2 $i)"
+	$array i $(echo "$i" | sed 's/./& /g' | opti3)
 	$array tape 0
 	kbf
 fi
