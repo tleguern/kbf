@@ -251,7 +251,6 @@ init() {
 		array=arrayksh
 	elif [ -n "$ZSH_VERSION" ]; then
 		setopt ksharrays
-		setopt no_function_argzero
 		array=arrayzsh
 	else
 		echo "Error: unsuported shell :(" >&2

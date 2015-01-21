@@ -1,5 +1,9 @@
 #!/bin/ksh
 
+if [ -n "$ZSH_VERSION" ]; then
+	setopt no_function_argzero
+fi
+
 . ../kbf.sh
 
 init
