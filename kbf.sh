@@ -234,7 +234,7 @@ stats() {
 
 opti1() {
 	if [ $Oflag -ge 1 ]; then
-		tr -Cd "${op_open}${op_close}${op_left}${op_right}${op_add}${op_sub}${op_in}${op_out}"
+		tr -Cd "\\${op_open}\\${op_close}\\${op_left}\\${op_right}\\${op_add}\\${op_sub}\\${op_in}\\${op_out}"
 	else
 		cat
 	fi
