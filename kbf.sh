@@ -53,7 +53,7 @@ arraybash() {
 	declare -ga $_array_name
 	local _array_i=0
 	local _array_j=0
-	for _array_i in $@; do
+	for _array_i in "$@"; do
 		declare -ga "$_array_name[$_array_j]=$_array_i"
 		_array_j=$(( $_array_j + 1 ))
 	done
