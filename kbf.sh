@@ -155,20 +155,13 @@ input() {
 	tape[$tptr]=`printf "%d" "'$char"`
 }
 
-matchingbrace() {
-	set +u
-	local _brace="$1"
-	set -u
+matchingclosebracket() {
 	local lc=0
 	local liptr=$iptr
 	local size=${#i[*]}
 
-	if [ "$_brace" = "$op_close" ]; then
-		$array i `echo ${i[*]} | rev`
-		liptr=$(( $size - $liptr - 1 ))
-	fi
 	while [ $liptr -lt $size ]; do
-		case ${i[$liptr]} in
+		case "${i[$liptr]}" in
 			"$op_open") lc=$(( $lc + 1 ));;
 			"$op_close") lc=$(( $lc - 1 ));;
 			*) :;;
@@ -178,12 +171,31 @@ matchingbrace() {
 		fi
 		liptr=$(( $liptr + 1 ))
 	done
-	if [ "$_brace" = "$op_close" ]; then
-		$array i `echo ${i[*]} | rev`
-		liptr=$(( $size - $liptr - 1 ))
-	fi
 	if [ $lc -ne 0 ]; then
-		echo "Error: Mismatched brace near character $iptr" >&2
+		echo "Error: Mismatched bracket near character $iptr" >&2
+		exit 1
+	fi
+	echo $liptr
+}
+
+matchingopenbracket() {
+	local lc=0
+	local liptr=$iptr
+	local size=${#i[*]}
+
+	while [ $liptr -gt 0 ]; do
+		case "${i[$liptr]}" in
+			"$op_open") lc=$(( $lc + 1 ));;
+			"$op_close") lc=$(( $lc - 1 ));;
+			*) :;;
+		esac
+		if [ $lc -eq 0 ]; then
+			break
+		fi
+		liptr=$(( $liptr - 1 ))
+	done
+	if [ $lc -ne 0 ]; then
+		echo "Error: Mismatched bracket near character $iptr" >&2
 		exit 1
 	fi
 	echo $liptr
@@ -285,11 +297,11 @@ kbf() {
 				$cell -1;;
 			"$op_open")
 				if [ ${tape[$tptr]} -eq 0 ]; then
-					jump=$((`matchingbrace $op_open` + 1))
+					jump=$(($(matchingclosebracket) + 1))
 				fi;;
 			"$op_close")
 				if [ ${tape[$tptr]} -ne 0 ]; then
-					jump=`matchingbrace $op_close`
+					jump=$(matchingopenbracket)
 				fi;;
 			"$op_out")
 				output;;
