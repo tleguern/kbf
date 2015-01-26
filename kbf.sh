@@ -44,7 +44,7 @@ op_out='.'
 arrayksh() {
 	local _array_name="$1"
 	shift
-	set -A $_array_name -- $@
+	set -A $_array_name -- ${@:-''}
 }
 
 arraybash() {
