@@ -41,18 +41,22 @@ The output operator '\&.' prints the value 10 as a newline.
 The arguments are as follows:
 .Bl -tag -width Ds
 .It Fl d
-Enable debug mode.
+Enable debug mode. This will print the executed instruction, the cell
+number and the cell value.
 .It Fl s
-Print information about the program after execution.
+Print information about the program after execution. This include the
+number of cell used, the number of instruction executed and a dump of
+the memory tape.
 .It Fl D
 Print the intermediary representation of the program and quit.
 .It Fl c
 Allow to choose the size of the cells, in bits. Accepted values are 8,
-16 and 32.
+16 and 32. The default is 32.
 .It Fl t
-Allow to choose the size of the tape.
+Allow to choose the size of the tape. The default is 1000.
 .It Fl O
 Allow to choose the optimization level. Accepted values are 0, 1 and 2.
+The default is 0.
 .Bl -tag -compact
 .It 0
 Disable all optimization.
