@@ -235,43 +235,83 @@ stats() {
 }
 
 opti1() {
-	if [ $Oflag -ge 1 ]; then
-		tr -Cd "\\${op_open}\\${op_close}\\${op_left}\\${op_right}\\${op_add}\\${op_sub}\\${op_in}\\${op_out}"
-	else
-		cat
+	if [ $Oflag -lt 1 ]; then
+		return 0
 	fi
+	local _index=0
+	local _size="$(( ${#i[*]} - 1 ))"
+	while true; do
+		case "${i[$_index]:-''}" in
+			"$op_add"|"$op_sub"|"$op_right"|"$op_left"|"$op_open"\
+			    |"$op_close"|"$op_in"|"$op_out") :;;
+			*) unset "i[$_index]";;
+		esac
+		if [ $_index -eq $_size ]; then
+			break
+		else
+			_index=$(($_index + 1))
+		fi
+	done
 }
 
 opti2() {
-	set +u
-	local _i="$*"
-	set -u
-	if [ $Oflag -ge 2 ]; then
-		count=${#_i}
-		while true; do
-			_i=$(echo $_i | sed "s/\\$op_open\\$op_close//g" \
-			    | sed "s/$op_add$op_sub//g" \
-			    | sed "s/$op_sub$op_add//g" \
-			    | sed "s/$op_left$op_right//g" \
-			    | sed "s/$op_right$op_left//g")
-			if [ $count -eq ${#_i} ]; then
-				break
-			else
-				count=${#_i}
-			fi
-		done
+	if [ $Oflag -lt 2 ]; then
+		return 0
 	fi
-	echo "$_i"
+	local _index=0
+	local _size="$(( ${#i[*]} - 1 ))"
+	local _modified=0
+	while true; do
+		case "${i[$_index]:-} ${i[$((_index + 1))]:-}" in
+			"$op_add $op_sub"|"$op_sub $op_add" \
+			    |"$op_left $op_right"|"$op_right $op_left"\
+			    |"$op_open $op_close")
+				unset "i[$_index]"
+				unset "i[$(($_index + 1))]"
+				_index=$(($_index + 2))
+				_modified=1
+			;;
+			*) _index=$(($_index + 1));;
+		esac
+		if [ $_index -ge $_size ]; then
+			break
+		fi
+	done
+	return $_modified
 }
 
 opti3() {
-	if [ $Oflag -ge 3 ]; then
-		sed "s/\\$op_open $op_sub \\$op_close/0/g" \
-		    | sed "s/\\$op_open $op_right \\$op_close/>>/g" \
-		    | sed "s/\\$op_open $op_left \\$op_close/<</g"
-	else
-		cat
+	if [ $Oflag -lt 3 ]; then
+		return 0
 	fi
+	local _index=0
+	local _size="$(( ${#i[*]} - 1 ))"
+	while true; do
+		case "${i[$_index]:-} ${i[$((_index + 1))]:-} ${i[$((_index + 2))]:-}" in
+			"$op_open $op_sub $op_close")
+				i[$_index]="0"
+				unset "i[$(($_index + 1))]"
+				unset "i[$(($_index + 2))]"
+				_index=$(($_index + 3))
+			;;
+			"$op_open $op_right $op_close")
+				i[$_index]=">>"
+				unset "i[$(($_index + 1))]"
+				unset "i[$(($_index + 2))]"
+				_index=$(($_index + 3))
+			;;
+			"$op_open $op_left $op_close")
+				i[$_index]="<<"
+				unset "i[$(($_index + 1))]"
+				unset "i[$(($_index + 2))]"
+				_index=$(($_index + 3))
+			;;
+			*) _index=$(($_index + 1));;
+		esac
+		if [ $_index -ge $_size ]; then
+			break
+		fi
+	done
 }
 
 init() {
@@ -411,9 +451,17 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ]; then
 	fi
 
 	init
-	i="$(cat $file | opti1)"
-	i="$(opti2 $i)"
-	$array i $(echo "$i" | sed 's/./& /g' | opti3)
+
+	$array i $(cat $file | sed 's/./& /g')
+	opti1
+	$array i ${i[*]}
+	until opti2; do
+		$array i ${i[*]}
+	done
+	$array i ${i[*]}
+	opti3
+	$array i ${i[*]}
+
 	$array tape 0
 	kbf
 fi
