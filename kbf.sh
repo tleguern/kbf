@@ -50,6 +50,7 @@ arrayksh() {
 arraybash() {
 	local _array_name="$1"
 	shift
+	unset $_array_name
 	declare -ga $_array_name
 	local _array_i=0
 	local _array_j=0
@@ -62,6 +63,7 @@ arraybash() {
 arrayzsh() {
 	local _array_name="$1"
 	shift
+	unset $_array_name
 	typeset -ga $_array_name
 	local _array_i=0
 	local _array_j=0
