@@ -18,7 +18,7 @@
 set -e
 
 readonly KBFPROGNAME="`basename $0`"
-readonly VERSION='v1.0'
+readonly KBFVERSION='v1.0'
 
 usage() {
 	echo "usage: $KBFPROGNAME [-dsD] [-c size] [-t size] [-O level] file[.b]" >&2
