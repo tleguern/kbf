@@ -41,13 +41,13 @@ op_close=']'
 op_in=','
 op_out='.'
 
-arrayksh() {
+_arrayksh() {
 	local _array_name="$1"
 	shift
 	set -A $_array_name -- ${@:-''}
 }
 
-arraybash() {
+_arraybash() {
 	local _array_name="$1"
 	shift
 	unset $_array_name
@@ -60,7 +60,7 @@ arraybash() {
 	done
 }
 
-arrayzsh() {
+_arrayzsh() {
 	local _array_name="$1"
 	shift
 	unset $_array_name
@@ -322,12 +322,12 @@ init() {
 
 	set +u
 	if [ -n "$BASH_VERSION" ]; then
-		array=arraybash
+		array=_arraybash
 	elif [ -n "$KSH_VERSION" ]; then
-		array=arrayksh
+		array=_arrayksh
 	elif [ -n "$ZSH_VERSION" ]; then
 		setopt ksharrays
-		array=arrayzsh
+		array=_arrayzsh
 	else
 		echo "Error: unsuported shell :(" >&2
 		exit 1
