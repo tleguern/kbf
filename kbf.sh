@@ -370,13 +370,19 @@ kbf() {
 			"$op_out")
 				output;;
 			'0')
-				$cell 0;;
+				if [ ${tape[$tptr]} -ne 0 ]; then
+					$cell 0
+				fi;;
 			"$op_in")
 				input;;
 			'<<')
-				prevzero;;
+				if [ ${tape[$tptr]} -ne 0 ]; then
+					prevzero
+				fi;;
 			'>>')
-				nextzero;;
+				if [ ${tape[$tptr]} -ne 0 ]; then
+					nextzero
+				fi;;
 			*) cc=$(( $cc + 1 ));;
 		esac
 		[ $dflag -eq 1 ] && echo " ${i[$iptr]}: [$tptr]=${tape[$tptr]}" >&2
