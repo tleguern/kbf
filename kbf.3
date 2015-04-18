@@ -24,18 +24,6 @@
 .\" .In kbf.sh
 .Fn init
 .Fn kbf
-.Fo arrayksh
-.Fa "$name"
-.Fa "$*"
-.Fc
-.Fo arraybash
-.Fa "$name"
-.Fa "$*"
-.Fc
-.Fo arrayzsh
-.Fa "$name"
-.Fa "$*"
-.Fc
 .Fo move
 .Fa "$index"
 .Fc
@@ -86,17 +74,6 @@ and
 .Fn cell16
 or
 .Fn cell32 .
-.Pp
-The
-.Fn arrayksh ,
-.Fn arraybash
-and
-.Fn arrayzsh
-are functions used to create indexed arrays. They take an unlimited
-number of parameters. The first one,
-.Fa name ,
-is used as the array name. The following arguments are inserted as
-values in the array.
 .Pp
 The
 .Fn move
