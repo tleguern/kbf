@@ -243,21 +243,21 @@ opti1() {
 }
 
 opti2() {
-	set +u
 	local _i="$*"
-	set -u
+	local _count=0
+
 	if [ $Oflag -ge 2 ]; then
-		count=${#_i}
+		_count=${#_i}
 		while true; do
 			_i=$(echo $_i | sed "s/\\$op_open\\$op_close//g" \
 			    | sed "s/$op_add$op_sub//g" \
 			    | sed "s/$op_sub$op_add//g" \
 			    | sed "s/$op_left$op_right//g" \
 			    | sed "s/$op_right$op_left//g")
-			if [ $count -eq ${#_i} ]; then
+			if [ $_count -eq ${#_i} ]; then
 				break
 			else
-				count=${#_i}
+				_count=${#_i}
 			fi
 		done
 	fi
