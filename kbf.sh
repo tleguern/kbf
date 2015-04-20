@@ -41,6 +41,10 @@ op_close=']'
 op_in=','
 op_out='.'
 
+op_clear='0'
+op_nextzero='}'
+op_prevzero='{'
+
 _arrayksh() {
 	local _array_name="$1"
 	shift
@@ -266,9 +270,9 @@ opti2() {
 
 opti3() {
 	if [ $Oflag -ge 3 ]; then
-		sed "s/\\$op_open $op_sub \\$op_close/0/g" \
-		    | sed "s/\\$op_open $op_right \\$op_close/>>/g" \
-		    | sed "s/\\$op_open $op_left \\$op_close/<</g"
+		sed "s/\\$op_open $op_sub \\$op_close/$op_clear/g" \
+		    | sed "s/\\$op_open $op_right \\$op_close/$op_nextzero/g" \
+		    | sed "s/\\$op_open $op_left \\$op_close/$op_prevzero/g"
 	else
 		cat
 	fi
@@ -329,17 +333,17 @@ kbf() {
 				fi;;
 			"$op_out")
 				output;;
-			'0')
+			"$op_clear")
 				if [ ${tape[$tptr]} -ne 0 ]; then
 					$cell 0
 				fi;;
 			"$op_in")
 				input;;
-			'<<')
+			"$op_prevzero")
 				if [ ${tape[$tptr]} -ne 0 ]; then
 					prevzero
 				fi;;
-			'>>')
+			"$op_nextzero")
 				if [ ${tape[$tptr]} -ne 0 ]; then
 					nextzero
 				fi;;
