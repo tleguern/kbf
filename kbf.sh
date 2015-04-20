@@ -21,11 +21,14 @@ readonly KBFPROGNAME="`basename $0`"
 readonly KBFVERSION='v1.0'
 
 usage() {
-	echo "usage: $KBFPROGNAME [-dsD] [-c size] [-t size] [-O level] file[.b]" >&2
+	echo "usage: $KBFPROGNAME [-dsD] [-c size] [-o flag] [-t size] [-O level] file[.b]" >&2
 }
 
 cflag=32
 dflag=0
+ostrip_comments=0
+ostrip_empty_and_null=0
+ooptimized_operands=0
 sflag=0
 tflag=999
 Oflag=0
@@ -40,7 +43,6 @@ op_open='['
 op_close=']'
 op_in=','
 op_out='.'
-
 op_clear='0'
 op_nextzero='}'
 op_prevzero='{'
@@ -238,19 +240,19 @@ stats() {
 	echo State of the tape: ${tape[*]}
 }
 
-opti1() {
-	if [ $Oflag -ge 1 ]; then
+strip_comments() {
+	if [ $ostrip_comments -eq 1 ]; then
 		tr -Cd "\\${op_open}\\${op_close}\\${op_left}\\${op_right}\\${op_add}\\${op_sub}\\${op_in}\\${op_out}"
 	else
 		cat
 	fi
 }
 
-opti2() {
+strip_empty_and_null() {
 	local _i="$*"
 	local _count=0
 
-	if [ $Oflag -ge 2 ]; then
+	if [ $ostrip_empty_and_null -eq 1 ]; then
 		_count=${#_i}
 		while true; do
 			_i=$(echo $_i | sed "s/\\$op_open\\$op_close//g" \
@@ -268,8 +270,8 @@ opti2() {
 	echo "$_i"
 }
 
-opti3() {
-	if [ $Oflag -ge 3 ]; then
+optimized_operands() {
+	if [ $ooptimized_operands -eq 1 ]; then
 		echo "$*" | sed "s/\\$op_open $op_sub \\$op_close/$op_clear/g" \
 		    | sed "s/\\$op_open $op_right \\$op_close/$op_nextzero/g" \
 		    | sed "s/\\$op_open $op_left \\$op_close/$op_prevzero/g"
@@ -364,11 +366,23 @@ kbf() {
 	fi
 }
 
+_getsubopts() {
+	local _subopt="$1"
+
+	case "$_subopt" in
+		"strip-comments") ostrip_comments=1;;
+		"strip-empty-and-null") ostrip_empty_and_null=1;;
+		"optimized-operands") ooptimized_operands=1;;
+		*) usage; exit 1;;
+	esac
+}
+
 if [ "${KBFPROGNAME%.sh}" = "kbf" ]; then
-	while getopts ":c:dst:O:D" opt;do
+	while getopts ":c:do:st:O:D" opt;do
 		case $opt in
 			c) cflag=$OPTARG;;
 			d) dflag=1;;
+			o) _getsubopts $OPTARG;;
 			s) sflag=1;;
 			t) tflag=$OPTARG;;
 			O) Oflag=$OPTARG;;
@@ -403,10 +417,18 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ]; then
 		echo "$KBFPROGNAME: tape size is invalid" >&2
 		exit 1
 	fi
-	if [ $Oflag -lt 0 ] || [ $Oflag -gt 3 ]; then
-		echo "$KBFPROGNAME: unsupported optimization level - $Oflag" >&2
-		exit 1
-	fi
+	case "$Oflag" in
+		0):;;
+		1) ostrip_comments=1;;
+		2) ostrip_comments=1
+		   ostrip_empty_and_null=1;;
+		3) ostrip_comments=1
+		   ostrip_empty_and_null=1
+		   ooptimized_operands=1;;
+		*) echo "$KBFPROGNAME: unsupported optimization level - $Oflag"\
+		    >&2
+		   exit 1;;
+	esac
 	if ! [ -e "$file" ]; then
 		echo "$KBFPROGNAME: no such file $file" >&2
 		exit 1
@@ -421,10 +443,10 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ]; then
 	fi
 
 	init
-	i="$(cat $file | opti1)"
-	i="$(opti2 $i)"
+	i="$(cat $file | strip_comments)"
+	i="$(strip_empty_and_null $i)"
 	i="$(echo $i | sed 's/./& /g')"
-	i="$(opti3 $i)"
+	i="$(optimized_operands $i)"
 	$array i $i
 	$array tape 0
 	kbf

@@ -53,6 +53,12 @@ t 0 'doubleloop.res' 'doubleloop.b'
 t 0 '50cells.res' '50cells.b'
 t 0 'hello.res' 'hello.b'
 t 1 '/dev/null' 'cristofd-close.b'
+t 0 'O1.res' 'optimization.b' '-D -O1'
+t 0 'O1.res' 'optimization.b' '-D -o strip-comments'
+t 0 'O2.res' 'optimization.b' '-D -O2'
+t 0 'O2.res' 'optimization.b' '-D -o strip-comments -o strip-empty-and-null'
+t 0 'O3.res' 'optimization.b' '-D -O3'
+t 0 'O3.res' 'optimization.b' '-D -o strip-comments -o strip-empty-and-null -o optimized-operands'
 [ $FULL -eq 1 ] && t 0 '65536.res' '65536.b'
 
 echo ""
