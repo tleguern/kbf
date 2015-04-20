@@ -270,11 +270,11 @@ opti2() {
 
 opti3() {
 	if [ $Oflag -ge 3 ]; then
-		sed "s/\\$op_open $op_sub \\$op_close/$op_clear/g" \
+		echo "$*" | sed "s/\\$op_open $op_sub \\$op_close/$op_clear/g" \
 		    | sed "s/\\$op_open $op_right \\$op_close/$op_nextzero/g" \
 		    | sed "s/\\$op_open $op_left \\$op_close/$op_prevzero/g"
 	else
-		cat
+		echo $*
 	fi
 }
 
@@ -423,7 +423,9 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ]; then
 	init
 	i="$(cat $file | opti1)"
 	i="$(opti2 $i)"
-	$array i $(echo "$i" | sed 's/./& /g' | opti3)
+	i="$(echo $i | sed 's/./& /g')"
+	i="$(opti3 $i)"
+	$array i $i
 	$array tape 0
 	kbf
 fi
