@@ -315,7 +315,7 @@ kbf() {
 	trap stats USR1
 
 	while [ $iptr -lt ${#i[*]} ]; do
-		jump=0
+		local _jump=0
 		case ${i[$iptr]} in
 			"$op_right")
 				move +1;;
@@ -327,11 +327,11 @@ kbf() {
 				$cell -1;;
 			"$op_open")
 				if [ ${tape[$tptr]} -eq 0 ]; then
-					jump=$(($(matchingclosebracket) + 1))
+					_jump=$(($(matchingclosebracket) + 1))
 				fi;;
 			"$op_close")
 				if [ ${tape[$tptr]} -ne 0 ]; then
-					jump=$(matchingopenbracket)
+					_jump=$(matchingopenbracket)
 				fi;;
 			"$op_out")
 				output;;
@@ -354,8 +354,8 @@ kbf() {
 		[ $dflag -eq 1 ] && echo " ${i[$iptr]}: [$tptr]=${tape[$tptr]}" >&2
 
 		ic=$(( $ic + 1 ))
-		if [ $jump -gt 0 ]; then
-			iptr=$jump
+		if [ $_jump -gt 0 ]; then
+			iptr=$_jump
 		else
 			iptr=$(( $iptr + 1 ))
 		fi
