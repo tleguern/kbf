@@ -352,7 +352,7 @@ kbf() {
 				fi;;
 			*) cc=$(( $cc + 1 ));;
 		esac
-		[ $dflag -eq 1 ] && echo " ${i[$iptr]}: [$tptr]=${tape[$tptr]}" >&2
+		[ $dflag -eq 1 ] && echo " $_in: [$tptr]=${tape[$tptr]}" >&2
 
 		ic=$(( $ic + 1 ))
 		if [ $_jump -gt 0 ]; then
