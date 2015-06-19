@@ -16,6 +16,7 @@
 #
 
 set -e
+set -f
 
 readonly KBFPROGNAME="$(basename $0)"
 readonly KBFVERSION='v1.0'
