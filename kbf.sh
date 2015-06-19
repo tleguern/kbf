@@ -30,6 +30,7 @@ dflag=0
 ostrip_comments=0
 ostrip_empty_and_null=0
 ooptimized_operands=0
+orun_length_encoding=0
 sflag=0
 tflag=999
 Oflag=1
@@ -281,6 +282,30 @@ optimized_operands() {
 	fi
 }
 
+run_length_encoding() {
+	if [ $orun_length_encoding -eq 1 ]; then
+		local _c=""
+		local _prev=""
+		local _i=""
+		for _i in $*; do
+			_prev="${_prev:=$_i}"
+
+			if [[ ( "$_i" = "$op_add" || "$_i" = "$op_sub" \
+			    || "$_i" = "$op_right" || "$_i" = "$op_left" ) \
+			    && "$_i" = "$_prev" ]]; then
+				_c="$_c$_i"
+			else
+				echo -n "$_c "
+				_prev="$_i"
+				_c="$_i"
+			fi
+		done
+		echo "$_c"
+	else
+		echo $*
+	fi
+}
+
 init() {
 	tptr=0
 	ic=0
@@ -317,15 +342,16 @@ kbf() {
 
 	while [ $iptr -lt ${#i[*]} ]; do
 		local _jump=0
-		case ${i[$iptr]} in
-			"$op_right")
-				move +1;;
-			"$op_left")
-				move -1;;
-			"$op_add")
-				$cell +1;;
-			"$op_sub")
-				$cell -1;;
+		local _in="${i[$iptr]}"
+		case $_in in
+			"$op_right"*)
+				move +${#_in};;
+			"$op_left"*)
+				move -${#_in};;
+			"$op_add"*)
+				$cell +${#_in};;
+			"$op_sub"*)
+				$cell -${#_in};;
 			"$op_open")
 				if [ ${tape[$tptr]} -eq 0 ]; then
 					_jump=$(($(matchingclosebracket) + 1))
@@ -374,6 +400,7 @@ _getsubopts() {
 		"strip-comments") ostrip_comments=1;;
 		"strip-empty-and-null") ostrip_empty_and_null=1;;
 		"optimized-operands") ooptimized_operands=1;;
+		"run-length-encoding") orun_length_encoding=1;;
 		*) usage; exit 1;;
 	esac
 }
@@ -426,6 +453,10 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ]; then
 		3) ostrip_comments=1
 		   ostrip_empty_and_null=1
 		   ooptimized_operands=1;;
+		4) ostrip_comments=1
+		   ostrip_empty_and_null=1
+		   ooptimized_operands=1
+		   orun_length_encoding=1;;
 		*) echo "$KBFPROGNAME: unsupported optimization level - $Oflag"\
 		    >&2
 		   exit 1;;
@@ -444,11 +475,13 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ]; then
 	fi
 
 	init
-	i="$(cat $file | strip_comments)"
+	i="$(cat $file)"
+	i="$(echo $i | strip_comments)"
 	i="$(strip_empty_and_null $i)"
 	i="$(echo $i | sed 's/./& /g')"
 	i="$(optimized_operands $i)"
+	i="$(run_length_encoding $i)"
 	$array i $i
-	$array tape 0
+	$array tape $(jot $tflag 0 $tflag 0)
 	kbf
 fi
