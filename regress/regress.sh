@@ -59,6 +59,7 @@ t 0 'O2.res' 'optimization.b' '-D -O2'
 t 0 'O2.res' 'optimization.b' '-D -o strip-comments -o strip-empty-and-null'
 t 0 'O3.res' 'optimization.b' '-D -O3'
 t 0 'O3.res' 'optimization.b' '-D -o strip-comments -o strip-empty-and-null -o optimized-operands'
+t 0 'prevzero.res' 'prevzero.b' '-s -o optimized-operands -t 10'
 [ $FULL -eq 1 ] && t 0 '65536.res' '65536.b'
 
 echo ""
