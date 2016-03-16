@@ -31,7 +31,7 @@ ostrip_empty_and_null=0
 ooptimized_operands=0
 sflag=0
 tflag=999
-Oflag=0
+Oflag=1
 Dflag=0
 file=''
 
