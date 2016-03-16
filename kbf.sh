@@ -17,7 +17,7 @@
 
 set -e
 
-readonly KBFPROGNAME="`basename $0`"
+readonly KBFPROGNAME="$(basename $0)"
 readonly KBFVERSION='v1.0'
 
 usage() {
@@ -158,9 +158,9 @@ output() {
 
 input() {
 	stty raw
-	local char="`dd bs=1 count=1 2> /dev/null`"
+	local char="$(dd bs=1 count=1 2> /dev/null)"
 	stty -raw
-	tape[$tptr]=`printf "%d" "'$char"`
+	tape[$tptr]=$(printf "%d" "'$char")
 }
 
 matchingclosebracket() {
