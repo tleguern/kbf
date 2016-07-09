@@ -69,7 +69,10 @@ t 0 'nextzero_op.res'	'nextzero_op.b'	'-O0 -t 10'
 t 0 'zero.res'		'zero.b'	'-o optimized-operands -t 2'
 t 0 'zero_op.res'	'zero_op.b'	'-O0 -t 2'
 
-[ $FULL -eq 1 ] && t 0 '65536.res' '65536.b'
+t 0 '15rle.res'		'15.b'	'-O0 -o run-length-encoding -t 2'
+t 0 '256rle.res'	'256.b'	'-O0 -o run-length-encoding -t 2'
+
+[ $FULL -eq 1 ] && t 0 '65536.res' '65536.b' '-t2'
 
 echo ""
 echo "Failed: $FAILED"
