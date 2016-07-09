@@ -44,22 +44,29 @@ failed() {
 	FAILED=`expr $FAILED + 1`
 }
 
-t 0 'headcom.res' 'headcom.b'
-t 0 '15.res' '15.b'
-t 0 '256.res' '256.b'
-t 0 '256-8bits.res' '256.b' '-c 8'
-t 0 'selfsize.res' 'selfsize.b'
-t 0 'doubleloop.res' 'doubleloop.b'
-t 0 '50cells.res' '50cells.b'
-t 0 'hello.res' 'hello.b'
-t 1 '/dev/null' 'cristofd-close.b'
+t 0 'headcom.res'	'headcom.b'	'-t 1'
+t 0 '15.res'		'15.b'		'-t 2'
+t 0 '256.res'		'256.b'		'-t 2'
+t 0 '256-8bits.res'	'256.b'		'-t 2 -c 8'
+t 0 'selfsize.res'	'selfsize.b'	'-t 3'
+t 0 'doubleloop.res'	'doubleloop.b'	'-t 3'
+t 0 '50cells.res'	'50cells.b'	'-t 50'
+t 0 'hello.res'		'hello.b'	'-t 7'
+
+t 1 '/dev/null'		'cristofd-close.b'
+
 t 0 'O1.res' 'optimization.b' '-D -O1'
 t 0 'O1.res' 'optimization.b' '-D -o strip-comments'
 t 0 'O2.res' 'optimization.b' '-D -O2'
 t 0 'O2.res' 'optimization.b' '-D -o strip-comments -o strip-empty-and-null'
 t 0 'O3.res' 'optimization.b' '-D -O3'
 t 0 'O3.res' 'optimization.b' '-D -o strip-comments -o strip-empty-and-null -o optimized-operands'
-t 0 'prevzero.res' 'prevzero.b' '-s -o optimized-operands -t 10'
+
+t 0 'prevzero.res'	'prevzero.b'	'-o optimized-operands -t 10'
+t 0 'prevzero_op.res'	'prevzero_op.b'	'-O0 -t 10'
+t 0 'nextzero.res'	'nextzero.b'	'-o optimized-operands -t 10'
+t 0 'nextzero_op.res'	'nextzero_op.b'	'-O0 -t 10'
+
 [ $FULL -eq 1 ] && t 0 '65536.res' '65536.b'
 
 echo ""

@@ -1,3 +1,3 @@
-Number of cells used: 2/1000
 Number of instructions: 689
 State of the tape: 256 0
+Pointer on cell: 1
