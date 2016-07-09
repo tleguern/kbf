@@ -66,6 +66,8 @@ t 0 'prevzero.res'	'prevzero.b'	'-o optimized-operands -t 10'
 t 0 'prevzero_op.res'	'prevzero_op.b'	'-O0 -t 10'
 t 0 'nextzero.res'	'nextzero.b'	'-o optimized-operands -t 10'
 t 0 'nextzero_op.res'	'nextzero_op.b'	'-O0 -t 10'
+t 0 'zero.res'		'zero.b'	'-o optimized-operands -t 2'
+t 0 'zero_op.res'	'zero_op.b'	'-O0 -t 2'
 
 [ $FULL -eq 1 ] && t 0 '65536.res' '65536.b'
 
