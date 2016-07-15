@@ -50,6 +50,7 @@ op_nextzero='}'
 op_prevzero='{'
 
 _arrayksh() {
+	# Very slow with big list of arguments.
 	local _array_name="$1"
 	shift
 	set -A $_array_name -- ${@:-''}
@@ -485,3 +486,4 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ]; then
 	$array tape $(jot $tflag 0 $tflag 0)
 	kbf
 fi
+
