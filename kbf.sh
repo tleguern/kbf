@@ -351,7 +351,7 @@ kbf() {
 			"$op_left"*)
 				move -${#_in};;
 			"$op_add"*)
-				$cell +${#_in};;
+				$cell ${#_in};;
 			"$op_sub"*)
 				$cell -${#_in};;
 			"$op_open")
