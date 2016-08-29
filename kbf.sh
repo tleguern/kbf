@@ -118,6 +118,7 @@ cell8() {
 		tape[$tptr]=0
 	elif [ $_nvalue -gt 255 ]; then
 		_nvalue=$(($_nvalue - 256))
+		tape[$tptr]=0
 		cell8 $_nvalue
 	elif [ $_nvalue -lt 0 ]; then
 		_nvalue=$(($_nvalue + 256))
@@ -137,6 +138,7 @@ cell16() {
 		tape[$tptr]=0
 	elif [ $_nvalue -gt 65535 ]; then
 		_nvalue=$(($_nvalue - 65536))
+		tape[$tptr]=0
 		cell16 $_nvalue
 	elif [ $_nvalue -lt 0 ]; then
 		_nvalue=$(($_nvalue + 65536))
