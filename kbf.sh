@@ -291,9 +291,10 @@ run_length_encoding() {
 		for _i in $*; do
 			_prev="${_prev:=$_i}"
 
-			if [[ ( "$_i" = "$op_add" || "$_i" = "$op_sub" \
-			    || "$_i" = "$op_right" || "$_i" = "$op_left" ) \
-			    && "$_i" = "$_prev" ]]; then
+			if ( [ "$_i" = "$op_add" ] || [ "$_i" = "$op_sub" ] \
+			    || [ "$_i" = "$op_right" ] \
+			    || [ "$_i" = "$op_left" ] ) \
+			    && [ "$_i" = "$_prev" ]; then
 				_c="$_c$_i"
 			else
 				echo -n "$_c "
