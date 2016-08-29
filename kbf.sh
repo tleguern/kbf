@@ -82,6 +82,13 @@ _arrayzsh() {
 	done
 }
 
+_givemesomezeros() {
+	local _i=$1
+	while ((_i--)); do
+		echo 0
+	done
+}
+
 move() {
 	set +u
 	local _index=$(( $tptr + $1 ))
@@ -484,7 +491,7 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ]; then
 	i="$(optimized_operands $i)"
 	i="$(run_length_encoding $i)"
 	$array i $i
-	$array tape $(jot $tflag 0 $tflag 0)
+	$array tape $(_givemesomezeros $tflag)
 	kbf
 fi
 
