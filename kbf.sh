@@ -148,6 +148,26 @@ cell16() {
 	fi
 }
 
+cell24() {
+	set +u
+	local _value="$1"
+	set -u
+	local _nvalue=$(( ${tape[$tptr]} + $_value ))
+
+	if [ $_value -eq 0 ]; then
+		tape[$tptr]=0
+	elif [ $_nvalue -gt 16777215 ]; then
+		_nvalue=$(($_nvalue - 16777216))
+		tape[$tptr]=0
+		cell24 $_nvalue
+	elif [ $_nvalue -lt 0 ]; then
+		_nvalue=$(($_nvalue + 16777216))
+		cell24 $_nvalue
+	else
+		tape[$tptr]=$_nvalue
+	fi
+}
+
 cell32() {
 	set +u
 	local _value="$1"
@@ -340,6 +360,7 @@ init() {
 	case "$cflag" in
 		8) cell=cell8;;
 		16) cell=cell16;;
+		24) cell=cell24;;
 		32) cell=cell32;;
 		*) echo "$KBFPROGNAME: Unsupported cell size - $cflag"
 		   exit 1;;
