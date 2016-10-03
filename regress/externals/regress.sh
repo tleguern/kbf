@@ -4,7 +4,7 @@
 
 FAILED=0
 
-kbf=${kbf:-../kbf.sh}
+kbf=${kbf:-../../kbf.sh}
 FULL=${FULL:-0}
 
 t() {
