@@ -25,7 +25,7 @@ usage() {
 	echo "usage: $KBFPROGNAME [-dsD] [-c size] [-o flag] [-t size] [-O level] file[.b]" >&2
 }
 
-cflag=32
+cflag=24
 dflag=0
 ostrip_comments=0
 ostrip_empty_and_null=0
@@ -168,7 +168,8 @@ cell24() {
 	fi
 }
 
-cell32() {
+# max cell size for mksh 46
+cell32s() {
 	set +u
 	local _value="$1"
 	set -u
@@ -176,9 +177,35 @@ cell32() {
 
 	if [ $_value -eq 0 ]; then
 		tape[$tptr]=0
+	elif [ $_nvalue -gt 2147483647 ]; then	# Necessary for int64 shells
+		_nvalue=$(($_nvalue - 2147483648))
+		tape[$tptr]=0
+		cell32s $_nvalue
 	elif [ $_nvalue -lt 0 ]; then
-		_nvalue=$(($_nvalue + 9223372036854775808))
-		cell32 $_nvalue
+		_nvalue=$(($_nvalue + 2147483648))
+		tape[$tptr]=0
+		cell32s $_nvalue
+	else
+		tape[$tptr]=$_nvalue
+	fi
+}
+
+cell32u() {
+	set +u
+	local _value="$1"
+	set -u
+	local _nvalue=$(( ${tape[$tptr]} + $_value ))
+
+	if [ $_value -eq 0 ]; then
+		tape[$tptr]=0
+	elif [ $_nvalue -gt 4294967295 ]; then
+		_nvalue=$(($_nvalue - 4294967296))
+		tape[$tptr]=0
+		cell32u $_nvalue
+	elif [ $_nvalue -lt 0 ]; then
+		_nvalue=$(($_nvalue + 4294967296))
+		tape[$tptr]=0
+		cell32u $_nvalue
 	else
 		tape[$tptr]=$_nvalue
 	fi
@@ -361,7 +388,8 @@ init() {
 		8) cell=cell8;;
 		16) cell=cell16;;
 		24) cell=cell24;;
-		32) cell=cell32;;
+		32s) cell=cell32s;;
+		32u) cell=cell32u;;
 		*) echo "$KBFPROGNAME: Unsupported cell size - $cflag"
 		   exit 1;;
 	esac
