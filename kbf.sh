@@ -64,7 +64,7 @@ _arraybash() {
 	local _array_i=0
 	local _array_j=0
 	for _array_i in "$@"; do
-		declare -ga "$_array_name[$_array_j]=$_array_i"
+		eval $_array_name[$_array_j]="\"$_array_i\""
 		_array_j=$(( $_array_j + 1 ))
 	done
 }
@@ -101,9 +101,6 @@ move() {
 	if [ $_index -gt $tflag ]; then
 		echo "Error: Reached max tape size" >&2
 		exit 1
-	fi
-	if [ $_index -ge ${#tape[@]} ]; then
-		tape[$_index]=0
 	fi
 	tptr=$_index
 }
