@@ -53,6 +53,7 @@ _arrayksh() {
 	# Very slow with big list of arguments.
 	local _array_name="$1"
 	shift
+	unset "$_array_name"
 	set -A $_array_name -- ${@:-''}
 }
 
@@ -65,19 +66,6 @@ _arraybash() {
 	local _array_j=0
 	for _array_i in "$@"; do
 		eval $_array_name[$_array_j]="\"$_array_i\""
-		_array_j=$(( $_array_j + 1 ))
-	done
-}
-
-_arrayzsh() {
-	local _array_name="$1"
-	shift
-	unset $_array_name
-	typeset -ga $_array_name
-	local _array_i=0
-	local _array_j=0
-	for _array_i in $@; do
-		typeset -g "$_array_name[$_array_j]"="$_array_i"
 		_array_j=$(( $_array_j + 1 ))
 	done
 }
@@ -392,7 +380,8 @@ init() {
 		array=_arrayksh
 	elif [ -n "$ZSH_VERSION" ]; then
 		setopt ksharrays
-		array=_arrayzsh
+		setopt sh_word_split
+		array=_arrayksh
 	else
 		echo "Error: unsuported shell :(" >&2
 		exit 1
@@ -481,8 +470,8 @@ _getsubopts() {
 	esac
 }
 
-if [ "${KBFPROGNAME%.sh}" = "kbf" ]; then
-	while getopts ":c:do:st:O:D" opt;do
+if [ "${KBFPROGNAME%.sh}" = "kbf" ] && [ "$*" != "as a library" ]; then
+	while getopts ":c:do:st:O:D" opt; do
 		case $opt in
 			c) cflag=$OPTARG;;
 			d) dflag=1;;

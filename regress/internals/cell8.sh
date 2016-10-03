@@ -1,6 +1,6 @@
 #!/bin/ksh
 
-. ../../kbf.sh
+. ../../kbf.sh as a library
 
 init
 
