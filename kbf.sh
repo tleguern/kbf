@@ -211,6 +211,24 @@ cell32u() {
 	fi
 }
 
+# max cell size for bash 4.3
+cell64s() {
+	set +u
+	local _value="$1"
+	set -u
+	local _nvalue=$(( ${tape[$tptr]} + $_value ))
+
+	if [ $_value -eq 0 ]; then
+		tape[$tptr]=0
+	elif [ $_nvalue -lt 0 ]; then
+		_nvalue=$(($_nvalue + 9223372036854775808))
+		tape[$tptr]=0
+		cell64s $_nvalue
+	else
+		tape[$tptr]=$_nvalue
+	fi
+}
+
 output() {
 	awk -v v=${tape[$tptr]} 'BEGIN { printf "%c", v; exit }'
 }
@@ -390,6 +408,7 @@ init() {
 		24) cell=cell24;;
 		32s) cell=cell32s;;
 		32u) cell=cell32u;;
+		64s) cell=cell64s;;
 		*) echo "$KBFPROGNAME: Unsupported cell size - $cflag"
 		   exit 1;;
 	esac
