@@ -33,7 +33,16 @@
 .Fo cell16
 .Fa "$value"
 .Fc
-.Fo cell32
+.Fo cell24
+.Fa "$value"
+.Fc
+.Fo cell32s
+.Fa "$value"
+.Fc
+.Fo cell32u
+.Fa "$value"
+.Fc
+.Fo cell64s
 .Fa "$value"
 .Fc
 .Fn output
@@ -71,9 +80,12 @@ or
 .Fn arrayzsh
 and
 .Fn cell8 ,
-.Fn cell16
+.Fn cell16 ,
+.Fn cell24 ,
+.Fn cell32s ,
+.Fn cell32u ,
 or
-.Fn cell32 .
+.Fn cell64s .
 .Pp
 The
 .Fn move
@@ -87,10 +99,13 @@ bellow the position zero or after the position
 .Pp
 The
 .Fn cell8 ,
-.Fn cell16
-and
-.Fn cell32
-are functions used to increase or decrease the value under the
+.Fn cell16 ,
+.Fn cell24 ,
+.Fn cell32s ,
+.Fn cell32u ,
+or
+.Fn cell64s
+functions increase or decrease the value under the
 .Sy Tape Pointer ,
 by the amount given as the parameter
 .Va $value .
