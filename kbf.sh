@@ -54,7 +54,11 @@ _arrayksh() {
 	local _array_name="$1"
 	shift
 	unset "$_array_name"
+	OLDIFS="$IFS"
+	IFS="
+"
 	set -A $_array_name -- ${@:-''}
+	IFS="$OLDIFS"
 }
 
 _arraybash() {
