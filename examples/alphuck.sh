@@ -1,25 +1,12 @@
-#!/bin/ksh
+# Tristan Le Guern <tleguern@bouledef.eu>
+# Public domain
 
-if [ -n "$ZSH_VERSION" ]; then
-	setopt no_function_argzero
-fi
+fromalphuck() {
+	trivialbrainfucksubstitution a c e i j o p s
+}
 
-. ../kbf.sh
-
-init
-
-op_right="a"
-op_left="c"
-op_add="e"
-op_sub="i"
-op_out="j"
-op_in="o"
-op_open="p"
-op_close="s"
-
-$array i a e e e e e e e e e p c e e e e e e a i s c j j j a e e e e e e e e e e j
-$array tape 0
-
-kbf
-stats
+toalphuck() {
+	trivialbrainfucksubstitution '>' '<' '+' '-' '.' ',' '[' ']' \
+		a c e i j o p s
+}
 
