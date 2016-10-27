@@ -50,25 +50,23 @@
 .Fn nextzero
 .Fn prevzero
 .Fn stats
-.Fn opti1
-.Fn opti2
 .Sh DESCRIPTION
 The
 .Fn init
 function defines the global variables
-.Va $i ,
+.Va $instructions ,
 .Va $tape ,
-.Va $iptr
+.Va $instidx
 and
-.Va $tptr ,
+.Va $tapeidx ,
 which are respectively the
 .Sy Instructions Array ,
 the
 .Sy Memory Tape ,
 the
-.Sy Instruction Pointer
+.Sy Instruction Index
 and the
-.Sy Tape Pointer .
+.Sy Tape Index .
 It also defines two shortands variables
 .Va $array
 and
@@ -109,11 +107,11 @@ functions increase or decrease the value under the
 .Sy Tape Pointer ,
 by the amount given as the parameter
 .Va $value .
-This value can be positive or negative. It is possible to give a large
+This value can be positive or negative.  It is possible to give a large
 value that will cause an overflow, also called wrap in Brainfuck
-terminologie. The value at wich a cell will wrap depend on the function
-used.
-The special value 0 is used to reset the cell value directly at 0.
+terminologie.  Underflows are also possible.  The value at wich a cell will
+wrap depend on the function used.  The special value 0 is used to reset the
+cell value directly at 0.
 .Pp
 The
 .Fn output
@@ -153,21 +151,6 @@ the number of instructions executed and the state of the
 .Sy Memory Tape .
 .Pp
 The
-.Fn opti1
-function performs the first level of optimisation. It reads arbitrary
-text from stdin and rewrites it on stdout with every comment,
-whitespace and newline filter out.
-.Pp
-The
-.Fn opti2
-function performs the second level of optimisation. It read
-pre-formated brainfuck operators from stdin, each separated from the
-others with a single whitespace, and replace a few simple loops with
-shorthand operands. See
-.Sx INTERMEDIARY REPRESENTATION
-for more details.
-.Pp
-The
 .Fn kbf
 function executes the instructions contained in the
 .Sy Instructions Array
@@ -176,10 +159,8 @@ with the help of the
 .Sh INTERMEDIARY REPRESENTATION
 The
 .Nm
-utility is transforms some parts of the program into new operators, for
-performance purpose. For the moment three new operators are available,
-introduced by
-.Fn opti2 :
+utility is able to transform some parts of the program into new operators, for
+performance purpose :
 .Bl -tag -width Ds
 .It 0
 Replace the clear loop, [-].
@@ -196,7 +177,7 @@ already initialized:
 \&. ./kbf.sh
 
 init
-$array i "+ + + [ > + + + < - ]"
+$array instructions "+ + + [ > + + + < - ]"
 $array tape 5 2
 kbf
 stats

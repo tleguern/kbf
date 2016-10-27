@@ -4,7 +4,7 @@ underflow_1() {
 	echo "underflow 1 : 0 - 1"
 	$array tape 0
 	cell32u -1
-	[ ${tape[$tptr]} -eq 4294967295 ]
+	[ ${tape[$tapeidx]} -eq 4294967295 ]
 }
 
 underflow_2() {
@@ -12,21 +12,21 @@ underflow_2() {
 	$array tape 0
 	cell32u -1
 	cell32u -1
-	[ ${tape[$tptr]} -eq 4294967294 ]
+	[ ${tape[$tapeidx]} -eq 4294967294 ]
 }
 
 underflow_3() {
 	echo "underflow 3 : 0 - 2"
 	$array tape 0
 	cell32u -2
-	[ ${tape[$tptr]} -eq 4294967294 ]
+	[ ${tape[$tapeidx]} -eq 4294967294 ]
 }
 
 overflow_1() {
 	echo "overflow 1 : 4294967295 + 1"
 	$array tape 4294967295
 	cell32u 1
-	[ ${tape[$tptr]} -eq 0 ]
+	[ ${tape[$tapeidx]} -eq 0 ]
 }
 
 overflow_2() {
@@ -34,14 +34,14 @@ overflow_2() {
 	$array tape 4294967295
 	cell32u 1
 	cell32u 1
-	[ ${tape[$tptr]} -eq 1 ]
+	[ ${tape[$tapeidx]} -eq 1 ]
 }
 
 overflow_3() {
 	echo "overflow 3 : 4294967295 + 2"
 	$array tape 4294967295
 	cell32u 2
-	[ ${tape[$tptr]} -eq 1 ]
+	[ ${tape[$tapeidx]} -eq 1 ]
 }
 
 n=1

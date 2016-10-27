@@ -83,7 +83,7 @@ _givemesomezeros() {
 
 move() {
 	set +u
-	local _index=$(( $tptr + $1 ))
+	local _index=$(( $tapeidx + $1 ))
 	set -u
 
 	if [ $_index -lt 0 ]; then
@@ -94,26 +94,26 @@ move() {
 		echo "Error: Reached max tape size" >&2
 		exit 1
 	fi
-	tptr=$_index
+	tapeidx=$_index
 }
 
 cell8() {
 	set +u
 	local _value="$1"
 	set -u
-	local _nvalue=$(( ${tape[$tptr]} + $_value ))
+	local _nvalue=$(( ${tape[$tapeidx]} + $_value ))
 
 	if [ $_value -eq 0 ]; then
-		tape[$tptr]=0
+		tape[$tapeidx]=0
 	elif [ $_nvalue -gt 255 ]; then
 		_nvalue=$(($_nvalue - 256))
-		tape[$tptr]=0
+		tape[$tapeidx]=0
 		cell8 $_nvalue
 	elif [ $_nvalue -lt 0 ]; then
 		_nvalue=$(($_nvalue + 256))
 		cell8 $_nvalue
 	else
-		tape[$tptr]=$_nvalue
+		tape[$tapeidx]=$_nvalue
 	fi
 }
 
@@ -121,19 +121,19 @@ cell16() {
 	set +u
 	local _value="$1"
 	set -u
-	local _nvalue=$(( ${tape[$tptr]} + $_value ))
+	local _nvalue=$(( ${tape[$tapeidx]} + $_value ))
 
 	if [ $_value -eq 0 ]; then
-		tape[$tptr]=0
+		tape[$tapeidx]=0
 	elif [ $_nvalue -gt 65535 ]; then
 		_nvalue=$(($_nvalue - 65536))
-		tape[$tptr]=0
+		tape[$tapeidx]=0
 		cell16 $_nvalue
 	elif [ $_nvalue -lt 0 ]; then
 		_nvalue=$(($_nvalue + 65536))
 		cell16 $_nvalue
 	else
-		tape[$tptr]=$_nvalue
+		tape[$tapeidx]=$_nvalue
 	fi
 }
 
@@ -141,19 +141,19 @@ cell24() {
 	set +u
 	local _value="$1"
 	set -u
-	local _nvalue=$(( ${tape[$tptr]} + $_value ))
+	local _nvalue=$(( ${tape[$tapeidx]} + $_value ))
 
 	if [ $_value -eq 0 ]; then
-		tape[$tptr]=0
+		tape[$tapeidx]=0
 	elif [ $_nvalue -gt 16777215 ]; then
 		_nvalue=$(($_nvalue - 16777216))
-		tape[$tptr]=0
+		tape[$tapeidx]=0
 		cell24 $_nvalue
 	elif [ $_nvalue -lt 0 ]; then
 		_nvalue=$(($_nvalue + 16777216))
 		cell24 $_nvalue
 	else
-		tape[$tptr]=$_nvalue
+		tape[$tapeidx]=$_nvalue
 	fi
 }
 
@@ -162,20 +162,20 @@ cell32s() {
 	set +u
 	local _value="$1"
 	set -u
-	local _nvalue=$(( ${tape[$tptr]} + $_value ))
+	local _nvalue=$(( ${tape[$tapeidx]} + $_value ))
 
 	if [ $_value -eq 0 ]; then
-		tape[$tptr]=0
+		tape[$tapeidx]=0
 	elif [ $_nvalue -gt 2147483647 ]; then	# Necessary for int64 shells
 		_nvalue=$(($_nvalue - 2147483648))
-		tape[$tptr]=0
+		tape[$tapeidx]=0
 		cell32s $_nvalue
 	elif [ $_nvalue -lt 0 ]; then
 		_nvalue=$(($_nvalue + 2147483648))
-		tape[$tptr]=0
+		tape[$tapeidx]=0
 		cell32s $_nvalue
 	else
-		tape[$tptr]=$_nvalue
+		tape[$tapeidx]=$_nvalue
 	fi
 }
 
@@ -183,20 +183,20 @@ cell32u() {
 	set +u
 	local _value="$1"
 	set -u
-	local _nvalue=$(( ${tape[$tptr]} + $_value ))
+	local _nvalue=$(( ${tape[$tapeidx]} + $_value ))
 
 	if [ $_value -eq 0 ]; then
-		tape[$tptr]=0
+		tape[$tapeidx]=0
 	elif [ $_nvalue -gt 4294967295 ]; then
 		_nvalue=$(($_nvalue - 4294967296))
-		tape[$tptr]=0
+		tape[$tapeidx]=0
 		cell32u $_nvalue
 	elif [ $_nvalue -lt 0 ]; then
 		_nvalue=$(($_nvalue + 4294967296))
-		tape[$tptr]=0
+		tape[$tapeidx]=0
 		cell32u $_nvalue
 	else
-		tape[$tptr]=$_nvalue
+		tape[$tapeidx]=$_nvalue
 	fi
 }
 
@@ -205,37 +205,37 @@ cell64s() {
 	set +u
 	local _value="$1"
 	set -u
-	local _nvalue=$(( ${tape[$tptr]} + $_value ))
+	local _nvalue=$(( ${tape[$tapeidx]} + $_value ))
 
 	if [ $_value -eq 0 ]; then
-		tape[$tptr]=0
+		tape[$tapeidx]=0
 	elif [ $_nvalue -lt 0 ]; then
 		_nvalue=$(($_nvalue + 9223372036854775808))
-		tape[$tptr]=0
+		tape[$tapeidx]=0
 		cell64s $_nvalue
 	else
-		tape[$tptr]=$_nvalue
+		tape[$tapeidx]=$_nvalue
 	fi
 }
 
 output() {
-	awk -v v=${tape[$tptr]} 'BEGIN { printf "%c", v; exit }'
+	awk -v v=${tape[$tapeidx]} 'BEGIN { printf "%c", v; exit }'
 }
 
 input() {
 	stty raw
 	local char="$(dd bs=1 count=1 2> /dev/null)"
 	stty -raw
-	tape[$tptr]=$(printf "%d" "'$char")
+	tape[$tapeidx]=$(printf "%d" "'$char")
 }
 
 matchingclosebracket() {
 	local lc=0
-	local liptr=$iptr
-	local size=${#i[*]}
+	local linstidx=$instidx
+	local size=${#instructions[*]}
 
-	while [ $liptr -lt $size ]; do
-		case "${i[$liptr]}" in
+	while [ $linstidx -lt $size ]; do
+		case "${instructions[$linstidx]}" in
 			"$op_open") lc=$(( $lc + 1 ));;
 			"$op_close") lc=$(( $lc - 1 ));;
 			*) :;;
@@ -243,22 +243,22 @@ matchingclosebracket() {
 		if [ $lc -eq 0 ]; then
 			break
 		fi
-		liptr=$(( $liptr + 1 ))
+		linstidx=$(( $linstidx + 1 ))
 	done
 	if [ $lc -ne 0 ]; then
-		echo "Error: Mismatched bracket near character $iptr" >&2
+		echo "Error: Mismatched bracket near character $instidx" >&2
 		exit 1
 	fi
-	echo $liptr
+	echo $linstidx
 }
 
 matchingopenbracket() {
 	local lc=0
-	local liptr=$iptr
-	local size=${#i[*]}
+	local linstidx=$instidx
+	local size=${#instructions[*]}
 
-	while [ $liptr -gt 0 ]; do
-		case "${i[$liptr]}" in
+	while [ $linstidx -gt 0 ]; do
+		case "${instructions[$linstidx]}" in
 			"$op_open") lc=$(( $lc + 1 ));;
 			"$op_close") lc=$(( $lc - 1 ));;
 			*) :;;
@@ -266,44 +266,44 @@ matchingopenbracket() {
 		if [ $lc -eq 0 ]; then
 			break
 		fi
-		liptr=$(( $liptr - 1 ))
+		linstidx=$(( $linstidx - 1 ))
 	done
 	if [ $lc -ne 0 ]; then
-		echo "Error: Mismatched bracket near character $iptr" >&2
+		echo "Error: Mismatched bracket near character $instidx" >&2
 		exit 1
 	fi
-	echo $liptr
+	echo $linstidx
 }
 
 nextzero() {
-	local ltptr=$tptr
+	local ltapeidx=$tapeidx
 	local size=${#tape[*]}
 
-	while [ $ltptr -lt $size ]; do
-		if [ ${tape[$ltptr]} -eq 0 ]; then
+	while [ $ltapeidx -lt $size ]; do
+		if [ ${tape[$ltapeidx]} -eq 0 ]; then
 			break
 		fi
-		ltptr=$(( $ltptr + 1 ))
+		ltapeidx=$(( $ltapeidx + 1 ))
 	done
-	tptr=$ltptr
+	tapeidx=$ltapeidx
 }
 
 prevzero() {
-	local ltptr=$tptr
+	local ltapeidx=$tapeidx
 
-	while [ $ltptr -gt 0 ]; do
-		if [ ${tape[$ltptr]} -eq 0 ]; then
+	while [ $ltapeidx -gt 0 ]; do
+		if [ ${tape[$ltapeidx]} -eq 0 ]; then
 			break
 		fi
-		ltptr=$(( $ltptr - 1 ))
+		ltapeidx=$(( $ltapeidx - 1 ))
 	done
-	tptr=$ltptr
+	tapeidx=$ltapeidx
 }
 
 stats() {
-	echo Number of instructions: $(( $ic - $cc ))
+	echo Number of instructions: $(( $instrcount - $commentscount ))
 	echo State of the tape: ${tape[*]}
-	echo Pointer on cell: $tptr
+	echo Pointer on cell: $tapeidx
 }
 
 strip_comments() {
@@ -372,10 +372,10 @@ run_length_encoding() {
 }
 
 init() {
-	tptr=0
-	ic=0
-	iptr=0
-	cc=0
+	tapeidx=0
+	instrcount=0
+	instidx=0
+	commentscount=0
 
 	set +u
 	if [ -n "$BASH_VERSION" ]; then
@@ -405,55 +405,57 @@ init() {
 }
 
 kbf() {
-	[ $Dflag -eq 1 ] && echo "${i[*]}" && exit 0
+	[ $Dflag -eq 1 ] && echo "${instructions[*]}" && exit 0
 
 	trap stats USR1
 
-	while [ $iptr -lt ${#i[*]} ]; do
+	while [ $instidx -lt ${#instructions[*]} ]; do
 		local _jump=0
-		local _in="${i[$iptr]}"
-		case $_in in
+		local _inst="${instructions[$instidx]}"
+		case $_inst in
 			"$op_right"*)
-				move +${#_in};;
+				move +${#_inst};;
 			"$op_left"*)
-				move -${#_in};;
+				move -${#_inst};;
 			"$op_add"*)
-				$cell ${#_in};;
+				$cell ${#_inst};;
 			"$op_sub"*)
-				$cell -${#_in};;
+				$cell -${#_inst};;
 			"$op_open")
-				if [ ${tape[$tptr]} -eq 0 ]; then
+				if [ ${tape[$tapeidx]} -eq 0 ]; then
 					_jump=$(($(matchingclosebracket) + 1))
 				fi;;
 			"$op_close")
-				if [ ${tape[$tptr]} -ne 0 ]; then
+				if [ ${tape[$tapeidx]} -ne 0 ]; then
 					_jump=$(matchingopenbracket)
 				fi;;
 			"$op_out")
 				output;;
 			"$op_clear")
-				if [ ${tape[$tptr]} -ne 0 ]; then
+				if [ ${tape[$tapeidx]} -ne 0 ]; then
 					$cell 0
 				fi;;
 			"$op_in")
 				input;;
 			"$op_prevzero")
-				if [ ${tape[$tptr]} -ne 0 ]; then
+				if [ ${tape[$tapeidx]} -ne 0 ]; then
 					prevzero
 				fi;;
 			"$op_nextzero")
-				if [ ${tape[$tptr]} -ne 0 ]; then
+				if [ ${tape[$tapeidx]} -ne 0 ]; then
 					nextzero
 				fi;;
-			*) cc=$(( $cc + 1 ));;
+			*) commentscount=$(( $commentscount + 1 ));;
 		esac
-		[ $dflag -eq 1 ] && echo " $_in: [$tptr]=${tape[$tptr]}" >&2
+		if [ $dflag -eq 1 ]; then
+			echo " $_inst: [$tapeidx]=${tape[$tapeidx]}" >&2
+		fi
 
-		ic=$(( $ic + 1 ))
+		instrcount=$(( $instrcount + 1 ))
 		if [ $_jump -gt 0 ]; then
-			iptr=$_jump
+			instidx=$_jump
 		else
-			iptr=$(( $iptr + 1 ))
+			instidx=$(( $instidx + 1 ))
 		fi
 	done
 
@@ -544,13 +546,13 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ] && [ "$*" != "as a library" ]; then
 	fi
 
 	init
-	i="$(cat $file)"
-	i="$(echo $i | strip_comments)"
-	i="$(strip_empty_and_null $i)"
-	i="$(echo $i | sed 's/./& /g')"
-	i="$(optimized_operands $i)"
-	i="$(run_length_encoding $i)"
-	$array i $i
+	instructions="$(cat $file)"
+	instructions="$(echo $instructions | strip_comments)"
+	instructions="$(strip_empty_and_null $instructions)"
+	instructions="$(echo $instructions | sed 's/./& /g')"
+	instructions="$(optimized_operands $instructions)"
+	instructions="$(run_length_encoding $instructions)"
+	$array instructions $instructions
 	$array tape $(_givemesomezeros $tflag)
 	kbf
 fi

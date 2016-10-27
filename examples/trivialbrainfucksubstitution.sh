@@ -36,17 +36,17 @@ trivialbrainfucksubstitution() {
 	local OLDIFS="$IFS"
 	IFS=$'\n'
 	local _i=0
-	while [ $_i -lt ${#i[@]} ]; do
-		echo "${i[$_i]}"
-		case "${i[$_i]}" in
-			"$sub_op_right") i[$_i]="$op_right";;
-			"$sub_op_left") i[$_i]="$op_left";;
-			"$sub_op_add") i[$_i]="$op_add";;
-			"$sub_op_sub") i[$_i]="$op_sub";;
-			"$sub_op_out") i[$_i]="$op_out";;
-			"$sub_op_in") i[$_i]="$op_in";;
-			"$sub_op_open") i[$_i]="$op_open";;
-			"$sub_op_close") i[$_i]="$op_close";;
+	while [ $_i -lt ${#instructions[@]} ]; do
+		echo "${instructions[$_i]}"
+		case "${instructions[$_i]}" in
+			"$sub_op_right") instructions[$_i]="$op_right";;
+			"$sub_op_left") instructions[$_i]="$op_left";;
+			"$sub_op_add") instructions[$_i]="$op_add";;
+			"$sub_op_sub") instructions[$_i]="$op_sub";;
+			"$sub_op_out") instructions[$_i]="$op_out";;
+			"$sub_op_in") instructions[$_i]="$op_in";;
+			"$sub_op_open") instructions[$_i]="$op_open";;
+			"$sub_op_close") instructions[$_i]="$op_close";;
 			*) :;;
 		esac
 		_i=$((_i + 1))
