@@ -2,6 +2,7 @@
 # Tristan Le Guern <tleguern@bouledef.eu>
 # Public domain
 
+cd $(dirname $0)
 n=0
 kbf=${kbf:-../../kbf.sh}
 FULL=${FULL:-0}

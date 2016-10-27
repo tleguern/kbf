@@ -45,6 +45,7 @@ overflow_3() {
 }
 
 n=1
+cd $(dirname $0)
 . ../../kbf.sh as a library
 init
 
