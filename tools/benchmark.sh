@@ -2,7 +2,7 @@
 # Tristan Le Guern <tleguern@bouledef.eu> - Public domain
 
 TESTFILE=${TESTFILE:-../regress/externals/bitwidth.b}
-SHELL=${SHELL:-ksh}
+SHELL=$(basename ${SHELL:-ksh})
 
 for size in 8 16 24 32s 32u 64s; do
 	for opt in 0 1 2 3 4; do
