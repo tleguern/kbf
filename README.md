@@ -1,8 +1,11 @@
 kbf - the Korn shell BrainFuck interpreter
 ==========================================
 
+    kbf [-dsD] [-c size] [-o optimization] [-t size] [-O level] file[.b]
+
 kbf is a brainfuck interpreter written in korn shell. It is currently
-compatible with the following shells:
+compatible with multiple shells, not just bash, and thus is probably the
+most portable implementation. The following shells are supported:
 
 - Public Domain Korn SHell - pdksh;
 - OpenBSD Korn SHell - oksh;
@@ -10,23 +13,40 @@ compatible with the following shells:
 - GNU Bourne-Again SHell - bash;
 - The Z shell - zsh.
 
-Some details about this implementation:
+Other shells might be supported in the future in they handle extension
+to POSIX such as local variables and arrays. This implementation works
+with various cell sizes from 8 to 64 bits but default to 24 as it is the
+largest size handled by all supported shells.
 
-- Lazy-initialized cells;
-- Support for 8, 16 and 32 bits cells;
-- Memory wrapping;
-- No negative cell number;
-- Fixed number of cells (default to 1000);
-- Newline is 10;
+Throught the switches -O and -o it is possible to enable some optimization
+strategies, such as optimized operators for some simple constructions and
+[run length encoding](https://fr.wikipedia.org/wiki/Run-length_encoding).
 
-kbf can be used directly or as a library. The usage and behaviour of
-these two modes are described in the corresponding man pages: kbf.1
-and kbf.3. It is possible to read them on any good systems like this:
+The “bitwidth.b” torture test written by
+[rdebath](https://github.com/rdebath/Brainfuck) works at every cell sizes
+and optimization levels :
+
+
+| cell size |             Output |
+| ----------|:------------------:|
+|         8 |   Hello World! 255 |
+|        16 | Hello world! 65535 |
+|        24 |      Hello, world! |
+|       32s |      Hello, world! |
+|       32u |      Hello, world! |
+|       64s |      Hello, world! |
+
+kbf can also be used as a library in order to implement extension or
+variants, such as Ook! or Blub (both implemented in the `examples/`
+directory).
+
+kbf can be used directly or as a library. The later can be useful to extend
+the brainfuck language or implement variants such as Ook! and blub. The
+usage and behaviour of this mode is described in the man page `kbf.3`
+while the executable command is described in `kbf.1`. It is possible to
+read them with either mandoc or groff:
 
     $ mandoc kbf.1 | less
-
-Otherwise this command might works :
-
     $ groff -m mdoc -Tascii kbf.1 | less
 
 Installation
