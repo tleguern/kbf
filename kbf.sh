@@ -28,7 +28,7 @@ usage() {
 cflag=24
 dflag=0
 ostrip_comments=0
-ostrip_empty_and_null=0
+ostrip_null_operations=0
 ooptimized_operands=0
 orun_length_encoding=0
 sflag=0
@@ -314,15 +314,14 @@ strip_comments() {
 	fi
 }
 
-strip_empty_and_null() {
+strip_null_operations() {
 	local _i="$*"
 	local _count=0
 
-	if [ $ostrip_empty_and_null -eq 1 ]; then
+	if [ $ostrip_null_operations -eq 1 ]; then
 		_count=${#_i}
 		while true; do
-			_i=$(echo $_i | sed "s/\\$op_open\\$op_close//g" \
-			    | sed "s/$op_add$op_sub//g" \
+			_i=$(echo $_i | sed "s/$op_add$op_sub//g" \
 			    | sed "s/$op_sub$op_add//g" \
 			    | sed "s/$op_left$op_right//g" \
 			    | sed "s/$op_right$op_left//g")
@@ -469,7 +468,7 @@ _getsubopts() {
 
 	case "$_subopt" in
 		"strip-comments") ostrip_comments=1;;
-		"strip-empty-and-null") ostrip_empty_and_null=1;;
+		"strip-null-operations") ostrip_null_operations=1;;
 		"optimized-operands") ooptimized_operands=1;;
 		"run-length-encoding") orun_length_encoding=1;;
 		*) usage; exit 1;;
@@ -520,12 +519,12 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ] && [ "$*" != "as a library" ]; then
 		0):;;
 		1) ostrip_comments=1;;
 		2) ostrip_comments=1
-		   ostrip_empty_and_null=1;;
+		   ostrip_null_operations=1;;
 		3) ostrip_comments=1
-		   ostrip_empty_and_null=1
+		   ostrip_null_operations=1
 		   ooptimized_operands=1;;
 		4) ostrip_comments=1
-		   ostrip_empty_and_null=1
+		   ostrip_null_operations=1
 		   ooptimized_operands=1
 		   orun_length_encoding=1;;
 		*) echo "$KBFPROGNAME: unsupported optimization level - $Oflag"\
@@ -548,7 +547,7 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ] && [ "$*" != "as a library" ]; then
 	init
 	instructions="$(cat $file)"
 	instructions="$(echo $instructions | strip_comments)"
-	instructions="$(strip_empty_and_null $instructions)"
+	instructions="$(strip_null_operations $instructions)"
 	instructions="$(echo $instructions | sed 's/./& /g')"
 	instructions="$(optimized_operands $instructions)"
 	instructions="$(run_length_encoding $instructions)"

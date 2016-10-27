@@ -61,9 +61,8 @@ multiple times.  The allowed values are :
 .Bl -tag -compact
 .It strip-comments
 Remove every comments, spaces and new lines in the program.
-.It strip-empty-and-null
-Remove empty loops and null actions, like a substraction
-following an addition.
+.It strip-null-operations
+Remove null actions, like a substraction following an addition.
 .It optimized-operands
 Replace some some simple but costly constructions with faster operators.
 Currently implemented are the clear loop [-], the next-zero [>] and
@@ -82,7 +81,7 @@ Disable all optimization.
 .It 1
 Toggle strip-comment.
 .It 2
-Also toggle strip-empty-and-null.
+Also toggle strip-null-operations.
 .It 3
 Also toggle optimized-operands.
 .It 4
