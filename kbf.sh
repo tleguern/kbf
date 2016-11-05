@@ -29,7 +29,7 @@ cflag=24
 dflag=0
 ostrip_comments=0
 ostrip_null_operations=0
-ooptimized_operands=0
+ooptimised_operands=0
 orun_length_encoding=0
 sflag=0
 tflag=999
@@ -87,11 +87,11 @@ move() {
 	set -u
 
 	if [ $_index -lt 0 ]; then
-		echo "Error: Can't move pointer bellow zero" >&2
+		echo "$KBFPROGNAME: can not move pointer bellow zero" >&2
 		exit 1
 	fi
 	if [ $_index -gt $tflag ]; then
-		echo "Error: Reached max tape size" >&2
+		echo "$KBFPROGNAME: reached max tape size" >&2
 		exit 1
 	fi
 	tapeidx=$_index
@@ -335,8 +335,8 @@ strip_null_operations() {
 	echo "$_i"
 }
 
-optimized_operands() {
-	if [ $ooptimized_operands -eq 1 ]; then
+optimised_operands() {
+	if [ $ooptimised_operands -eq 1 ]; then
 		echo "$*" | sed "s/\\$op_open $op_sub \\$op_close/$op_clear/g" \
 		    | sed "s/\\$op_open $op_right \\$op_close/$op_nextzero/g" \
 		    | sed "s/\\$op_open $op_left \\$op_close/$op_prevzero/g"
@@ -386,7 +386,7 @@ init() {
 		setopt sh_word_split
 		array=_arrayksh
 	else
-		echo "Error: unsuported shell :(" >&2
+		echo "$KBFPROGNAME: unsupported shell" >&2
 		exit 1
 	fi
 	set -u
@@ -398,7 +398,7 @@ init() {
 		32s) cell=cell32s;;
 		32u) cell=cell32u;;
 		64s) cell=cell64s;;
-		*) echo "$KBFPROGNAME: Unsupported cell size - $cflag"
+		*) echo "$KBFPROGNAME: unsupported cell size - $cflag"
 		   exit 1;;
 	esac
 }
@@ -469,7 +469,7 @@ _getsubopts() {
 	case "$_subopt" in
 		"strip-comments") ostrip_comments=1;;
 		"strip-null-operations") ostrip_null_operations=1;;
-		"optimized-operands") ooptimized_operands=1;;
+		"optimised-operands") ooptimised_operands=1;;
 		"run-length-encoding") orun_length_encoding=1;;
 		*) usage; exit 1;;
 	esac
@@ -487,7 +487,7 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ] && [ "$*" != "as a library" ]; then
 			D) Dflag=1;;
 			:) echo "$KBFPROGNAME: option requires an argument -- $OPTARG" >&2;
 			   usage; exit 1;;	# NOTREACHED
-			\?) echo "$KBFPROGNAME: unkown option -- $OPTARG" >&2;
+			\?) echo "$KBFPROGNAME: unknown option -- $OPTARG" >&2;
 			   usage; exit 1;;	# NOTREACHED
 			*) usage; exit 1;;	# NOTREACHED
 		esac
@@ -522,12 +522,12 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ] && [ "$*" != "as a library" ]; then
 		   ostrip_null_operations=1;;
 		3) ostrip_comments=1
 		   ostrip_null_operations=1
-		   ooptimized_operands=1;;
+		   ooptimised_operands=1;;
 		4) ostrip_comments=1
 		   ostrip_null_operations=1
-		   ooptimized_operands=1
+		   ooptimised_operands=1
 		   orun_length_encoding=1;;
-		*) echo "$KBFPROGNAME: unsupported optimization level - $Oflag"\
+		*) echo "$KBFPROGNAME: unsupported optimisation level - $Oflag"\
 		    >&2
 		   exit 1;;
 	esac
@@ -540,7 +540,7 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ] && [ "$*" != "as a library" ]; then
 		exit 1
 	fi
 	if ! [ -r "$file" ]; then
-		echo "$KBFPROGNAME: can't read $file" >&2
+		echo "$KBFPROGNAME: can not read $file" >&2
 		exit 1
 	fi
 
@@ -549,7 +549,7 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ] && [ "$*" != "as a library" ]; then
 	instructions="$(echo $instructions | strip_comments)"
 	instructions="$(strip_null_operations $instructions)"
 	instructions="$(echo $instructions | sed 's/./& /g')"
-	instructions="$(optimized_operands $instructions)"
+	instructions="$(optimised_operands $instructions)"
 	instructions="$(run_length_encoding $instructions)"
 	$array instructions $instructions
 	$array tape $(_givemesomezeros $tflag)

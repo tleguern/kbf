@@ -1,7 +1,7 @@
 kbf - the Korn shell BrainFuck interpreter
 ==========================================
 
-    kbf [-dsD] [-c size] [-o optimization] [-t size] [-O level] file[.b]
+    kbf [-dsD] [-c size] [-o optimisation] [-t size] [-O level] file[.b]
 
 kbf is a brainfuck interpreter written in korn shell. It is currently
 compatible with multiple shells, not just bash, and thus is probably the
@@ -18,13 +18,13 @@ to POSIX such as local variables and arrays. This implementation works
 with various cell sizes from 8 to 64 bits but default to 24 as it is the
 largest size handled by all supported shells.
 
-Throught the switches -O and -o it is possible to enable some optimization
-strategies, such as optimized operators for some simple constructions and
+Through the switches -O and -o it is possible to enable some optimisation
+strategies, such as optimised operators for some simple constructions and
 [run length encoding](https://fr.wikipedia.org/wiki/Run-length_encoding).
 
 The “bitwidth.b” torture test written by
 [rdebath](https://github.com/rdebath/Brainfuck) works at every cell sizes
-and optimization levels :
+and optimisation levels :
 
 
 | cell size |             Output |

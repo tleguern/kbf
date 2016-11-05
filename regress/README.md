@@ -3,7 +3,7 @@ Regression tests
 
 There is two kinds of regress tests here, the “internals” tests
 the functions exposed by kbf and “externals” tests the command line
-interface with various brainfuck programms.
+interface with various brainfuck programmes.
 
 All the tests emit [TAP](https://testanything.org/) compatible output.
 
