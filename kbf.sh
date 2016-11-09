@@ -1,6 +1,6 @@
 #!/bin/ksh
 #
-# Copyright (c) 2014-2015 Tristan Le Guern <tleguern@bouledef.eu>
+# Copyright (c) 2014-2016 Tristan Le Guern <tleguern@bouledef.eu>
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -19,7 +19,7 @@ set -e
 set -f
 
 readonly KBFPROGNAME="$(basename $0)"
-readonly KBFVERSION='v1.0'
+readonly KBFVERSION='v2.0'
 
 usage() {
 	echo "usage: $KBFPROGNAME [-dsD] [-c size] [-o flag] [-t size] [-O level] file[.b]" >&2
