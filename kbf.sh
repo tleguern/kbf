@@ -22,7 +22,7 @@ readonly KBFPROGNAME="$(basename $0)"
 readonly KBFVERSION='v2.0'
 
 usage() {
-	echo "usage: $KBFPROGNAME [-dsD] [-c size] [-o flag] [-t size] [-O level] file[.b]" >&2
+	echo "usage: $KBFPROGNAME [-dsD] [-c size] [-o flag] [-t size] [-x level] [-O level] file" >&2
 }
 
 cflag=24
@@ -31,12 +31,14 @@ ostrip_comments=0
 ostrip_null_operations=0
 ooptimised_operands=0
 orun_length_encoding=0
-sflag=0
+sflag=false
 tflag=999
+xflag=0
 Oflag=1
 Dflag=0
 file=''
 
+# Classic operators
 op_add='+'
 op_sub='-'
 op_left='<'
@@ -45,9 +47,20 @@ op_open='['
 op_close=']'
 op_in=','
 op_out='.'
+# Optimized operators
 op_clear='0'
-op_nextzero='}'
-op_prevzero='{'
+op_nextzero='nz'
+op_prevzero='pz'
+# Extended Type I
+op_exit='@'
+op_toreg='$'
+op_fromreg='!'
+op_rshift='}'
+op_lshift='{'
+op_not='~'
+op_xor='^'
+op_and='&'
+op_or='|'
 
 _arrayksh() {
 	# Very slow with big list of arguments.
@@ -304,11 +317,18 @@ stats() {
 	echo Number of instructions: $(( $instrcount - $commentscount ))
 	echo State of the tape: ${tape[*]}
 	echo Pointer on cell: $tapeidx
+	if [ $xflag -eq 1 ]; then
+		echo Value in register: $register
+	fi
 }
 
 strip_comments() {
 	if [ $ostrip_comments -eq 1 ]; then
-		tr -Cd "\\${op_open}\\${op_close}\\${op_left}\\${op_right}\\${op_add}\\${op_sub}\\${op_in}\\${op_out}"
+		if [ $xflag -eq 0 ]; then
+			tr -Cd "\\${op_open}\\${op_close}\\${op_left}\\${op_right}\\${op_add}\\${op_sub}\\${op_in}\\${op_out}"
+		else
+			tr -Cd "\\${op_open}\\${op_close}\\${op_left}\\${op_right}\\${op_add}\\${op_sub}\\${op_in}\\${op_out}\\${op_exit}\\${op_toreg}\\${op_fromreg}\\${op_rshift}\\${op_lshift}\\${op_not}\\${op_xor}\\${op_and}\\${op_or}"
+		fi
 	else
 		cat
 	fi
@@ -375,6 +395,7 @@ init() {
 	instrcount=0
 	instidx=0
 	commentscount=0
+	register=0
 
 	set +u
 	if [ -n "$BASH_VERSION" ]; then
@@ -401,6 +422,30 @@ init() {
 		*) echo "$KBFPROGNAME: unsupported cell size - $cflag"
 		   exit 1;;
 	esac
+	case "$xflag" in
+		0) extended_type=extended_type_0;;
+		1) extended_type=extended_type_1;;
+		*):;;
+	esac
+}
+
+extended_type_1() {
+	case "$1" in
+		"$op_exit") exit 0;;
+		"$op_toreg") register=${tape[$tapeidx]};;
+		"$op_fromreg") tape[$tapeidx]=$register;;
+		"$op_rshift") tape[$tapeidx]=$((${tape[$tapeidx]} >> 1));;
+		"$op_lshift") tape[$tapeidx]=$((${tape[$tapeidx]} << 1));;
+		"$op_not") tape[$tapeidx]=$((~${tape[$tapeidx]}));;
+		"$op_xor") tape[$tapeidx]=$((${tape[$tapeidx]} ^ $register));;
+		"$op_and") tape[$tapeidx]=$((${tape[$tapeidx]} & $register));;
+		"$op_or") tape[$tapeidx]=$((${tape[$tapeidx]} | $register));;
+		*) extended_type_0;;
+	esac
+}
+
+extended_type_0() {
+	commentscount=$(( $commentscount + 1 ))
 }
 
 kbf() {
@@ -444,7 +489,7 @@ kbf() {
 				if [ ${tape[$tapeidx]} -ne 0 ]; then
 					nextzero
 				fi;;
-			*) commentscount=$(( $commentscount + 1 ));;
+			*) $extended_type "$_inst";;
 		esac
 		if [ $dflag -eq 1 ]; then
 			echo " $_inst: [$tapeidx]=${tape[$tapeidx]}" >&2
@@ -457,10 +502,6 @@ kbf() {
 			instidx=$(( $instidx + 1 ))
 		fi
 	done
-
-	if [ $sflag -eq 1 ]; then
-		stats
-	fi
 }
 
 _getsubopts() {
@@ -476,13 +517,14 @@ _getsubopts() {
 }
 
 if [ "${KBFPROGNAME%.sh}" = "kbf" ] && [ "$*" != "as a library" ]; then
-	while getopts ":c:do:st:O:D" opt; do
+	while getopts ":c:do:st:x:O:D" opt; do
 		case $opt in
 			c) cflag=$OPTARG;;
 			d) dflag=1;;
 			o) _getsubopts $OPTARG;;
-			s) sflag=1;;
+			s) sflag=true;;
 			t) tflag=$OPTARG;;
+			x) xflag=$OPTARG;;
 			O) Oflag=$OPTARG;;
 			D) Dflag=1;;
 			:) echo "$KBFPROGNAME: option requires an argument -- $OPTARG" >&2;
@@ -515,6 +557,11 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ] && [ "$*" != "as a library" ]; then
 		echo "$KBFPROGNAME: tape size is invalid" >&2
 		exit 1
 	fi
+	case "$xflag" in
+		0|1) :;;
+		*) echo "$KBFPROGNAME: unsupported extended type level" >&2
+		   exit 1;;
+	esac
 	case "$Oflag" in
 		0):;;
 		1) ostrip_comments=1;;
@@ -545,6 +592,7 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ] && [ "$*" != "as a library" ]; then
 	fi
 
 	init
+	$sflag && trap stats EXIT
 	instructions="$(cat $file)"
 	instructions="$(echo $instructions | strip_comments)"
 	instructions="$(strip_null_operations $instructions)"
