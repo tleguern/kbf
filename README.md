@@ -49,6 +49,8 @@ read them with either mandoc or groff:
     $ mandoc kbf.1 | less
     $ groff -m mdoc -Tascii kbf.1 | less
 
+A mandoc version of these man pages is also provided: [kbf.1.md](kbf.1.md) and [kbf.3.md](kbf.3.md).
+
 Installation
 ------------
 
