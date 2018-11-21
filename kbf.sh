@@ -566,13 +566,10 @@ if [ "${KBFPROGNAME%.sh}" = "kbf" ] && [ "$*" != "as a library" ]; then
 		0):;;
 		1) ostrip_comments=1;;
 		2) ostrip_comments=1
-		   ostrip_null_operations=1;;
-		3) ostrip_comments=1
-		   ostrip_null_operations=1
 		   ooptimised_operands=1;;
-		4) ostrip_comments=1
-		   ostrip_null_operations=1
+		3) ostrip_comments=1
 		   ooptimised_operands=1
+		   ostrip_null_operations=1
 		   orun_length_encoding=1;;
 		*) echo "$KBFPROGNAME: unsupported optimisation level - $Oflag"\
 		    >&2
