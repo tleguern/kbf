@@ -512,7 +512,7 @@ _getsubopts() {
 		"strip-null-operations") ostrip_null_operations=1;;
 		"optimised-operands") ooptimised_operands=1;;
 		"run-length-encoding") orun_length_encoding=1;;
-		*) usage; exit 1;;
+		*) echo "unknown optimization -- $_subopt" >&2; usage; exit 1;;
 	esac
 }
 
