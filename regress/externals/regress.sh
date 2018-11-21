@@ -78,6 +78,8 @@ t 0 'op_exit_x1.res' 'op_exit.b' '-s -x1 -t10'
 t 0 'op_toreg.res' 'op_toreg.b' '-s -x1 -t10 -o optimised-operands'
 t 0 'op_fromreg.res' 'op_fromreg.b' '-s -x1 -t10 -o optimised-operands'
 t 0 'hello_type1.res' 'hello_type1.b' '-s -x1 -c8 -t10 -O0'
+t 0 'palette.res' 'palette.b' '-s -x1 -c8 -t256'
+t 0 'palette-O3.res' 'palette.b' '-s -x1 -c8 -t256 -O3'
 
 if [ $FULL -eq 1 ]; then
 	t 0 '65536.res' '65536.b' '-t2'
