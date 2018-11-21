@@ -314,11 +314,11 @@ prevzero() {
 }
 
 stats() {
-	echo Number of instructions: $(( $instrcount - $commentscount ))
-	echo State of the tape: ${tape[*]}
-	echo Pointer on cell: $tapeidx
+	echo Number of instructions: $(( $instrcount - $commentscount )) >&2
+	echo State of the tape: ${tape[*]} >&2
+	echo Pointer on cell: $tapeidx >&2
 	if [ $xflag -eq 1 ]; then
-		echo Value in register: $register
+		echo Value in register: $register >&2
 	fi
 }
 
