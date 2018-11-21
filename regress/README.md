@@ -1,13 +1,13 @@
 Regression tests
 ================
 
-There is two kinds of regress tests here, the “internals” tests
+There are two kinds of regress tests here, the “internals” tests
 the functions exposed by kbf and “externals” tests the command line
 interface with various brainfuck programmes.
 
 All the tests emit [TAP](https://testanything.org/) compatible output.
 
-Run the test with [rra/c-tap-harness](https://github.com/rra/c-tap-harness)
+Run the tests with [rra/c-tap-harness](https://github.com/rra/c-tap-harness)
 like this :
 
     $ runtests -s externals regress.sh
