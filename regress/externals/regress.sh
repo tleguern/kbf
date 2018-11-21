@@ -58,9 +58,9 @@ t 1 '/dev/null'		'cristofd-close.b'
 t 0 'O1.res' 'optimisation.b' '-D -O1'
 t 0 'O1.res' 'optimisation.b' '-D -o strip-comments'
 t 0 'O2.res' 'optimisation.b' '-D -O2'
-t 0 'O2.res' 'optimisation.b' '-D -o strip-comments -o strip-null-operations'
+t 0 'O2.res' 'optimisation.b' '-D -o strip-comments -o optimised-operands'
 t 0 'O3.res' 'optimisation.b' '-D -O3'
-t 0 'O3.res' 'optimisation.b' '-D -o strip-comments -o strip-null-operations -o optimised-operands'
+t 0 'O3.res' 'optimisation.b' '-D -o strip-comments -o strip-null-operations -o optimised-operands -o run-length-encoding'
 # Test optimised operands pv
 t 0 'op_prevzero.res' 'op_prevzero.b' '-s -o optimised-operands -t 10'
 # Test optimised operands nv
