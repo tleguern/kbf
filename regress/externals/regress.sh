@@ -18,7 +18,7 @@ t() {
 
 	tmp=$(mktemp -t kbf.XXXXXXXX)
 	set +e
-	$kbf $4 $3 > $tmp 2> /dev/null
+	$kbf $4 $3 > $tmp 2>&1
 	ret=$?
 	set -e
 	if [ $ret -ne $1 ]; then
