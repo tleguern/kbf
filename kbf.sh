@@ -328,9 +328,9 @@ stats() {
 strip_comments() {
 	if [ $ostrip_comments -eq 1 ]; then
 		if [ $xflag -eq 0 ]; then
-			tr -Cd "\\${op_open}\\${op_close}\\${op_left}\\${op_right}\\${op_add}\\${op_sub}\\${op_in}\\${op_out}"
+			tr -cd "\\${op_open}\\${op_close}\\${op_left}\\${op_right}\\${op_add}\\${op_sub}\\${op_in}\\${op_out}"
 		else
-			tr -Cd "\\${op_open}\\${op_close}\\${op_left}\\${op_right}\\${op_add}\\${op_sub}\\${op_in}\\${op_out}\\${op_exit}\\${op_toreg}\\${op_fromreg}\\${op_rshift}\\${op_lshift}\\${op_not}\\${op_xor}\\${op_and}\\${op_or}"
+			tr -cd "\\${op_open}\\${op_close}\\${op_left}\\${op_right}\\${op_add}\\${op_sub}\\${op_in}\\${op_out}\\${op_exit}\\${op_toreg}\\${op_fromreg}\\${op_rshift}\\${op_lshift}\\${op_not}\\${op_xor}\\${op_and}\\${op_or}"
 		fi
 	else
 		cat
