@@ -235,7 +235,8 @@ cell64s() {
 }
 
 output() {
-	awk -v v=${tape[$tapeidx]} 'BEGIN { printf "%c", v; exit }'
+	local _octalchar="$(printf "%o\n" "${tape[tapeidx]}")"
+	printf %b "\0$_octalchar"
 }
 
 input() {
