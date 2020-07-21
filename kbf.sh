@@ -240,9 +240,19 @@ output() {
 }
 
 input() {
-	stty raw
-	local char="$(dd bs=1 count=1 2> /dev/null)"
-	stty -raw
+	local char=
+
+	set +u
+	if [ -n "$BASH_VERSION" ]; then
+		read -rsn 1 char
+	elif [ -n "$ZSH_VERSION" ]; then
+		read -rsk 1 char
+	else
+		stty raw
+		char="$(dd bs=1 count=1 2> /dev/null)"
+		stty -raw
+	fi
+	set -u
 	tape[$tapeidx]=$(printf "%d" "'$char")
 }
 
