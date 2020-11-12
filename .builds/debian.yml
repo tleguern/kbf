@@ -1,0 +1,21 @@
+image: debian/stable
+packages:
+  - bash
+  - zsh
+  - mksh
+sources:
+  - https://git.sr.ht/~tleguern/kbf
+tasks:
+  - test-bash: |
+      cd kbf/
+      bash regress/externals/regress.sh
+  - test-zsh: |
+      cd kbf/
+      zsh regress/externals/regress.sh
+  - test-mksh: |
+      cd kbf/
+      mksh regress/externals/regress.sh
+triggers:
+  - action: email
+    condition: failure
+    to: "<tleguern+kbf@bouledef.eu>"

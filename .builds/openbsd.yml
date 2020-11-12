@@ -1,0 +1,20 @@
+image: openbsd/latest
+packages:
+  - bash
+  - zsh
+sources:
+  - https://git.sr.ht/~tleguern/kbf
+tasks:
+  - test-oksh: |
+      cd kbf/
+      ksh regress/externals/regress.sh
+  - test-bash: |
+      cd kbf/
+      bash regress/externals/regress.sh
+  - test-zsh: |
+      cd kbf/
+      zsh regress/externals/regress.sh
+triggers:
+  - action: email
+    condition: failure
+    to: "<tleguern+kbf@bouledef.eu>"
