@@ -1,5 +1,16 @@
-kbf - the Korn shell BrainFuck interpreter
-==========================================
+## kbf
+
+The Korn shell BrainFuck interpreter
+
+## Contents
+
+1. [Synopsis](#synopsis)
+2. [Install](#install)
+3. [Tests](#tests)
+4. [Contributing](#contributing)
+5. [License](#license)
+
+## Synopsis
 
     kbf [-dsD] [-c size] [-o optimisation] [-t size] [-O level] file[.b]
 
@@ -36,24 +47,37 @@ and optimisation levels :
 |       32u |      Hello, world! |
 |       64s |      Hello, world! |
 
-kbf can also be used as a library in order to implement extension or
-variants, such as Ook! or Blub (both implemented in the `examples/`
-directory).
-
-kbf can be used directly or as a library. The later can be useful to extend
-the brainfuck language or implement variants such as Ook! and blub. The
-usage and behaviour of this mode is described in the man page `kbf.3`
-while the executable command is described in `kbf.1`. It is possible to
-read them with either mandoc or groff:
+kbf can be used directly or as a library.  The later can be useful to extend
+the brainfuck language or implement variants such as Ook!  and blub (as
+implemented in the `examples` directory).  The usage and behaviour of this
+mode is described in the man page `kbf.3` while the executable command is
+described in `kbf.1`.  It is possible to read them with either mandoc or
+groff:
 
     $ mandoc kbf.1 | less
     $ groff -m mdoc -Tascii kbf.1 | less
 
 A mandoc version of these man pages is also provided: [kbf.1.md](kbf.1.md) and [kbf.3.md](kbf.3.md).
 
-Installation
-------------
+## Install
 
-There is a Makefile available for BSD systems, just run `make install`.
+### Requires
+
+* Any a-bit-more-than-POSIX shell.
+
+### Build
+
+There is a makefile available for BSD systems, just run `make install`.
 If you use something else just use `cp kbf.sh $DESTDIR/kbf`.
 
+## Tests
+
+Regression tests are available and documented in a dedicated [regress/README.md](README).
+
+## Contributing
+
+Either send [send GitHub pull requests](https://github.com/Aversiste/kbf) or [send patches on SourceHut](https://lists.sr.ht/~tleguern/misc).
+
+## License
+
+All the code is licensed under the ISC License.
