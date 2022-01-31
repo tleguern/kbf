@@ -411,12 +411,11 @@ init() {
 	commentscount=0
 	register=0
 
-	set +u
-	if [ -n "$BASH_VERSION" ]; then
+	if [ -n "${BASH_VERSION:-}" ]; then
 		array=_arraybash
-	elif [ -n "$KSH_VERSION" ]; then
+	elif [ -n "${KSH_VERSION:-}" ]; then
 		array=_arrayksh
-	elif [ -n "$ZSH_VERSION" ]; then
+	elif [ -n "${ZSH_VERSION:-}" ]; then
 		setopt ksharrays
 		setopt sh_word_split
 		array=_arrayksh
@@ -424,7 +423,6 @@ init() {
 		echo "$KBFPROGNAME: unsupported shell" >&2
 		exit 1
 	fi
-	set -u
 
 	case "$cflag" in
 		8) cell=cell8;;
