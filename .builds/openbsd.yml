@@ -11,9 +11,9 @@ tasks:
   - test-bash: |
       cd kbf/
       bash regress/externals/regress.sh
-  - test-zsh: |
-      cd kbf/
-      zsh regress/externals/regress.sh
+# - test-zsh: |
+#     cd kbf/
+#     zsh regress/externals/regress.sh
 triggers:
   - action: email
     condition: failure

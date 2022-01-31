@@ -22,7 +22,7 @@ most portable implementation. The following shells are supported:
 - OpenBSD Korn SHell - oksh;
 - MirBSD Korn SHell - mksh;
 - GNU Bourne-Again SHell - bash;
-- The Z shell - zsh.
+- ~~The Z shell - zsh.~~
 
 Other shells might be supported in the future in they handle extension
 to POSIX such as local variables and arrays. This implementation works
